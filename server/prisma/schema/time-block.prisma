@@ -1,0 +1,19 @@
+model TimeBlock {
+  id          String   @id @default(uuid())
+  scheduleId  String? 
+  locationId  String  
+  sectionId   String?
+  startTime   DateTime
+  endTime     DateTime
+  capacity    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  schedule    Schedule? @relation(fields: [scheduleId], references: [id], onDelete: Cascade) 
+  location    Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  section     Section? @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  bookings    Booking[]
+  // NOTA: Prisma no define CHECK constraints (como endTime > startTime) en el schema.
+  // Debes validar esto en tu código antes de guardar en la BD.
+
+  @@map("time_blocks")
+}

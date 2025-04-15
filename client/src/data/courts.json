@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Pasto Sintetico 1",
+    "startTime": "10:00",
+    "endTime": "22:00",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRASvVvtSnZeHmVe0iLdp97HqKSybNY00aMMg&s"
+  },
+  {
+    "name": "Pasto Sintetico 2",
+    "startTime": "10:00",
+    "endTime": "22:00",
+    "imageUrl": "https://pbs.twimg.com/media/CyNYJleXEAAqgQB.jpg"
+  },
+  {
+    "name": "Cancha de Tenis",
+    "startTime": "10:00",
+    "endTime": "22:00",
+    "imageUrl": "https://escuelanaval.cl/wp-content/uploads/2018/05/tenis_u_naval_4.jpg"
+  }
+]

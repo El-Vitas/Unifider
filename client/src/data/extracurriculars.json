@@ -1,0 +1,92 @@
+[
+  {
+    "name": "futbol",
+    "image": "https://images.pexels.com/photos/274422/pexels-photo-274422.jpeg?cs=srgb&dl=pexels-pixabay-274422.jpg&fm=jpg",
+    "courses": [
+      {
+        "time": "16:00",
+        "instructor": "Paulo Cazeres",
+        "courseCode": 201,
+        "weekDay": "Lunes",
+        "courtName": "Cancha 1",
+        "courtImage": "https://usm.cl/wp-content/uploads/2023/10/copausm2023-2.jpg"
+      },
+      {
+        "time": "17:30",
+        "instructor": "Maria Gomez",
+        "courseCode": 202,
+        "weekDay": "Lunes",
+        "courtName": "Cancha 1",
+        "courtImage": "https://usm.cl/wp-content/uploads/2023/10/copausm2023-2.jpg"
+      },
+      {
+        "time": "15:00",
+        "instructor": "Carlos Ramirez",
+        "courseCode": 203,
+        "weekDay": "Jueves",
+        "courtName": "Cancha 1",
+        "courtImage": "https://usm.cl/wp-content/uploads/2023/10/copausm2023-2.jpg"
+      }
+    ]
+  },
+  {
+    "name": "basketball",
+    "image": "https://cdn.nba.com/teams/uploads/sites/1610612754/2024/10/GettyImages-2180292158.jpg?im=Resize=(640)",
+    "courses": [
+      {
+        "time": "18:30",
+        "instructor": "Sarah Johnson",
+        "courseCode": 301,
+        "weekDay": "Miercoles",
+        "courtName": "Gimnasio Principal",
+        "courtImage": "https://usm.cl/wp-content/uploads/2024/06/campeonatos-SJ.jpg"
+      },
+      {
+        "time": "19:30",
+        "instructor": "James Smith",
+        "courseCode": 302,
+        "weekDay": "martes",
+        "courtName": "Gimnasio Principal",
+        "courtImage": "https://usm.cl/wp-content/uploads/2024/06/campeonatos-SJ.jpg"
+      },
+      {
+        "time": "10:30",
+        "instructor": "Emma Brown",
+        "courseCode": 303,
+        "weekDay": "Jueves",
+        "courtName": "Gimnasio Principal",
+        "courtImage": "https://usm.cl/wp-content/uploads/2024/06/campeonatos-SJ.jpg"
+      }
+    ]
+  },
+  {
+    "name": "boleibol",
+    "image": "https://cdn.britannica.com/95/190895-050-955A908C/volleyball-match-Italy-Russia-Milan-Volleyball-World.jpg",
+    "courses": [
+      {
+        "time": "10:00",
+        "instructor": "David Lee",
+        "courseCode": 401,
+        "courtName": "Gimnasio Principal",
+        "weekDay": "Viernes",
+        "courtImage": "https://usm.cl/wp-content/uploads/2024/06/campeonatos-SJ.jpg"
+      },
+      {
+        "time": "12:00",
+        "instructor": "Laura Wilson",
+        "courseCode": 402,
+        "courtName": "Cancha de arena",
+        "weekDay": "Viernes",
+        "courtImage": "https://i0.wp.com/bcrd.org/wp-content/uploads/2022/10/Sand_Volleyball_Hero1.jpg?fit=1024%2C682&ssl=1"
+      },
+      {
+        "time": "14:00",
+        "instructor": "Michael Clark",
+        "courseCode": 403,
+        "courtName": "Gimnasio Principal",
+        "weekDay": "Sabado",
+        "courtImage": "https://usm.cl/wp-content/uploads/2024/06/campeonatos-SJ.jpg"
+      }
+    ]
+  }
+]

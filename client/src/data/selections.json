@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Futbol",
+    "instructor": "Juan Perez",
+    "contact": "+56 9 1234 5678",
+    "image": "https://usm.cl/wp-content/uploads/2022/09/Copa-UNAB.jpg"
+  },
+  {
+    "name": "Basquetbol",
+    "instructor": "Guillermina Lopez",
+    "contact": "+56 9 7123 4567",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZBghPdGfYIHduc99dJth9HlusIfhclYf5MjFpxVJVffY1SnXYfD8zGojORza2JXj-EGo&usqp=CAU"
+  },
+  {
+    "name": "Voleibol",
+    "instructor": "Juan Perez",
+    "contact": "+56 9 2345 6789",
+    "image": "https://usm.cl/wp-content/uploads/2024/10/seleccion-voleibol-USM_b.jpg"
+  }
+]
