@@ -8,5 +8,36 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     container_name: unifider_db
-    volumes:
-      - ./postgres:/var/lib/postgresql/data
+    networks:
+      - unifider_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -h localhost -p 5432 -d ${DB_NAME}"]
+      interval: 5s      
+      timeout: 5s      
+      retries: 5     
+      start_period: 10s 
+
+  server:
+    build:
+      context: ./
+      dockerfile: dockerfile
+    ports:
+      - "3000:3000"
+    working_dir: /app
+    command:
+      - sh
+      - -c
+      - >
+        npx prisma migrate reset --force &&
+        npm run start:dev
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=development
+    networks:
+      - unifider_network
+
+networks:
+  unifider_network:
+    external: true
