@@ -1,9 +1,21 @@
 model Location {
-  id          String      @id @default(uuid())
-  name        String      @unique
-  description String?    
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  timeBlocks TimeBlock[]
-  @@map("locations")
+    id          String   @id @default(uuid())
+    name        String   @unique // Nombre del lugar físico
+    description String?
+    createdBy   String // ID del User que lo creó
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    // Relación con el creador
+    admin User @relation("AdminLocations", fields: [createdBy], references: [id])
+
+    // Relaciones inversas: Qué cosas usan esta ubicación
+    sectionTimeSlots SectionTimeSlot[] // Horarios de sección en esta ubicación
+    gyms             Gym[] // Gimnasios en esta ubicación
+    courts           Court[] // Canchas en esta ubicación
+
+    // Gyms / Courts podrían tener una relación directa si un Gym/Court *ES* una ubicación,
+    // pero es más flexible que *tengan* una ubicación (como FK en Gym/Court).
+
+    @@map("locations")
 }

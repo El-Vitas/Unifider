@@ -1,12 +1,14 @@
 model Workshop {
-  id                String     @id @default(uuid())
-  name              String     @unique
-  imageUrl          String?
-  description       String?
-  createdBy         String    
-  createdAt         DateTime   @default(now())
-  updatedAt         DateTime   @updatedAt
-  user              User       @relation("UserWorkshops", fields: [createdBy], references: [id])
-    sections         Section[]
+  id          String    @id @default(uuid())
+  name        String    @unique
+  imageUrl    String?
+  description String?
+  createdBy   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  admin       User      @relation("AdminWorkshops", fields: [createdBy], references: [id])
+  sections    Section[]
+
   @@map("workshops")
 }

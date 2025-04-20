@@ -1,0 +1,13 @@
+model GymEquipment {
+  gymId       String
+  equipmentId String
+  quantity    Int      @default(1) // Cantidad de esta máquina en este gym
+  assignedAt  DateTime @default(now()) // Opcional: cuándo se añadió
+
+  // Relaciones
+  gym         Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  equipment   Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+
+  @@id([gymId, equipmentId]) // Clave primaria compuesta
+  @@map("gym_equipment")
+}

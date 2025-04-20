@@ -1,0 +1,16 @@
+model Equipment {
+  id           String   @id @default(uuid())
+  name         String   @unique // Nombre de la máquina/equipo
+  description  String?
+  createdBy    String   // ID del User que lo registró
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relación con el creador
+  admin        User     @relation("AdminEquipment", fields: [createdBy], references: [id])
+
+  // Relación: En qué gimnasios está este equipo (a través de GymEquipment)
+  gyms         GymEquipment[]
+
+  @@map("equipment")
+}

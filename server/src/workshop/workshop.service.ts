@@ -12,6 +12,24 @@ export class WorkshopService {
     return workshops;
   }
 
+  async findOneByName(name: string) {
+    name = name.toLowerCase().trim();
+    const workshop = await this.prisma.workshop.findUnique({
+      where: {
+        name,
+      },
+    });
+    if (!workshop) {
+      throw new NotFoundException(`Workshop with name ${name} not found`);
+    }
+    return {
+      id: workshop.id,
+      name: workshop.name,
+      description: workshop.description,
+      imageUrl: workshop.imageUrl,
+    };
+  }
+
   async findOneById(id: string) {
     const workshop = await this.prisma.workshop.findUnique({
       where: { id },

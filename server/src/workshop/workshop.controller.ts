@@ -1,5 +1,6 @@
-import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { WorkshopService } from './workshop.service';
+import { isUUID } from 'class-validator';
 
 @Controller('workshop')
 export class WorkshopController {
@@ -15,8 +16,12 @@ export class WorkshopController {
     return this.workshopService.findAllWithExtraData();
   }
 
-  @Get(':id')
-  findOneById(@Param('id', ParseUUIDPipe) id: string) {
-    return this.workshopService.findOneById(id);
+  @Get(':value')
+  async findOne(@Param('value') value: string) {
+    if (isUUID(value)) {
+      return this.workshopService.findOneById(value);
+    } else {
+      return this.workshopService.findOneByName(value);
+    }
   }
 }

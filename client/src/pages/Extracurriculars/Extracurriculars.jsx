@@ -7,7 +7,6 @@ import defaultImg from '../../assets/img/defaultImg.png';
 
 const Extracurriculars = () => {
   const [extracurriculars, setExtracurriculars] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { authToken } = useAuth();
   useEffect(() => {
@@ -25,15 +24,12 @@ const Extracurriculars = () => {
         setExtracurriculars(response.data);
       } catch (err) {
         setError(err.message);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchExtracurriculars();
   }, [authToken]);
 
-  if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
   return (
@@ -47,12 +43,10 @@ const Extracurriculars = () => {
         return (
           <CourseCard
             key={name}
-            props={{
-              name,
-              image,
-              description,
-              numCourses: numberOfCourses,
-            }}
+            name={name}
+            image={image}
+            description={description}
+            numCourses={numberOfCourses}
           />
         );
       })}

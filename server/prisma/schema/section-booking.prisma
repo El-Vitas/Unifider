@@ -1,0 +1,13 @@
+model SectionBooking {
+    id          String   @id @default(uuid())
+    userId      String
+    bookingDate DateTime
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    sectionId   String
+    user        User     @relation("UserSectionBookings", fields: [userId], references: [id], onDelete: Cascade)
+
+    section     Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+    @@unique([sectionId, userId])
+    @@map("section_bookings")
+}

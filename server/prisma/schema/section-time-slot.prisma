@@ -1,0 +1,17 @@
+model SectionTimeSlot {
+  id          String           @id @default(uuid())
+  sectionId   String          
+  locationId  String          
+  dayOfWeek   Int              // Día de la semana (1=Lunes, ..., 7=Domingo)
+  startTime   DateTime         // Hora inicio (Guardar DateTime UTC, usar solo hora en app)
+  endTime     DateTime         // Hora fin (Guardar DateTime UTC, usar solo hora en app)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  section     Section          @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  location    Location         @relation(fields: [locationId], references: [id], onDelete: Restrict)
+
+  // Validar endTime > startTime y dayOfWeek en código de aplicación
+
+  @@map("section_time_slots")
+}

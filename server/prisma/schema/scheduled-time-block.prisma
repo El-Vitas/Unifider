@@ -1,0 +1,17 @@
+model ScheduledTimeBlock {
+  id          String             @id @default(uuid())
+  scheduleId  String             // A qué Schedule pertenece (Requerido)
+  dayOfWeek   Int                // Día de la semana (1=Lunes, ..., 7=Domingo) - Asumiendo horario semanal
+  startTime   DateTime           // Hora inicio (Guardar DateTime UTC)
+  endTime     DateTime           // Hora fin (Guardar DateTime UTC)
+  capacity    Int                @default(0) 
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  schedule    Schedule           @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  bookings    ScheduledBooking[]
+
+  // Validar endTime > startTime y dayOfWeek en código de aplicación
+
+  @@map("scheduled_time_blocks") // Nombre de tabla distinto
+}

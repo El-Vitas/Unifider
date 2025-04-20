@@ -1,16 +1,25 @@
 model User {
-  id         String   @id @default(uuid())
-  fullName   String
-  email      String   @unique
-  password   String
-  roleId     String
-  role       Role     @relation(fields: [roleId], references: [id])
-  lastLogin  DateTime?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String   @id @default(uuid())
+  fullName    String
+  email       String   @unique
+  password    String  
+  roleId      String
+  lastLogin   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  createdWorkshops Workshop[] @relation("UserWorkshops")
-  bookings         Booking[]
-  sections         Section[]  @relation("UserSection")
+  role        Role     @relation(fields: [roleId], references: [id])
+
+  createdWorkshops Workshop[] @relation("AdminWorkshops")
+  createdSections  Section[]  @relation("AdminSections")
+  createdLocations Location[] @relation("AdminLocations")
+  createdGyms      Gym[]      @relation("AdminGyms")
+  createdCourts    Court[]    @relation("AdminCourts")
+  createdEquipment Equipment[] @relation("AdminEquipment")
+  createdSchedules Schedule[] @relation("AdminSchedules")
+
+  sectionBookings  SectionBooking[]   @relation("UserSectionBookings")
+  scheduledBookings ScheduledBooking[] @relation("UserScheduledBookings")
+
   @@map("users")
 }

@@ -1,6 +1,8 @@
 import { Role as RolePrisma } from '@prisma/client';
 
-export class User implements RolePrisma {
+export class Role implements RolePrisma {
   id: string;
   name: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
