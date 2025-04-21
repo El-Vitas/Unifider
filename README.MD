@@ -1,3 +1,8 @@
+## Primeros pasos
+
+Lo primero que se debe hacer es renombrar los archivos .env.example a .env, cambiar los puertos si se quiere, etc.
+En caso que solo se quiera probar simplemente basta con renombrar los archivos.
+
 ## Comandos Disponibles
 
 El proyecto incluye un `Makefile` que simplifica la gestión de los contenedores Docker. Asegúrate de tener Docker y Make instalados en tu sistema.
