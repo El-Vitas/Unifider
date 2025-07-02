@@ -1,6 +1,10 @@
 name: Bearer CLI Code Scanning
 
 on:
+  push:
+    branches:
+      - master
+      - dev
   pull_request:
     branches:
       - master
@@ -28,7 +32,7 @@ jobs:
       - name: Upload Bearer Client results to Code Scanning
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: client/bearer-client-results.rdjson
+          sarif_file: bearer-client-results.rdjson # <--- RUTA CORREGIDA: Asumiendo que el archivo se crea en la raíz
           category: bearer-client
 
   bearer_scan_server:
@@ -48,5 +52,5 @@ jobs:
       - name: Upload Bearer Server results to Code Scanning
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: server/bearer-server-results.rdjson
+          sarif_file: bearer-server-results.rdjson # <--- RUTA CORREGIDA: Asumiendo que el archivo se crea en la raíz
           category: bearer-server
