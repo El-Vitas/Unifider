@@ -3,7 +3,7 @@ name: Restrict PRs to Main
 on:
   pull_request:
     branches:
-      - '**' # Se ejecuta para PRs hacia cualquier rama
+      - 'master'
 
 jobs:
   check_source_branch:
@@ -17,17 +17,10 @@ jobs:
         run: |
           SOURCE_BRANCH="${{ github.head_ref }}"
           BASE_BRANCH="${{ github.base_ref }}"
-          
-          # --- ECHOS DE DEPURACIÓN ---
-          echo "DEBUG: Valor de SOURCE_BRANCH: $SOURCE_BRANCH"
-          echo "DEBUG: Valor de BASE_BRANCH: $BASE_BRANCH"
-          echo "DEBUG: Comparando BASE_BRANCH ('$BASE_BRANCH') con 'main'"
-          echo "DEBUG: Comparando SOURCE_BRANCH ('$SOURCE_BRANCH') con 'dev'"
-          # --- FIN ECHOS DE DEPURACIÓN ---
 
-          if [ "$BASE_BRANCH" == "main" ] && [ "$SOURCE_BRANCH" != "dev" ]; then
+          if [ "$BASE_BRANCH" == "master" ] && [ "$SOURCE_BRANCH" != "dev" ]; then
             echo "::error file=.github/workflows/restrict-main-pr.yml::Pull Requests to 'main' are only allowed from 'dev' branch. Please rebase your changes onto 'dev' and open a PR from 'dev' to 'main'."
-            exit 1 # Falla el job si la condición no se cumple
+            exit 1
           else
             echo "Source branch is valid for this Pull Request."
           fi
