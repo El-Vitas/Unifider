@@ -8,8 +8,8 @@
         "build": "vite build",
         "lint": "eslint .",
         "preview": "vite preview",
-        "format": "prettier --write \"src/**/*.jsx\"",
-        "format:check": "prettier --check \"**/*.js\" \"**/*.jsx\""
+        "format": "prettier --write \"src/**/*.jsx\" \"src/**/*.js\"",
+        "format:check": "prettier --check \"src/**/*.jsx\" \"src/**/*.js\""
     },
     "dependencies": {
         "@ant-design/icons": "^5.5.1",
