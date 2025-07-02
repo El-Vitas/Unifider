@@ -3,12 +3,7 @@ name: Bearer CLI Code Scanning
 on:
   push:
     branches:
-      - main
-      - dev
-  pull_request:
-    branches:
-      - main
-      - dev
+      ['**']
 
 permissions:
   contents: read
