@@ -1,0 +1,52 @@
+name: Bearer CLI Code Scanning
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+permissions:
+  contents: read
+  security-events: write # Necesario para subir resultados de Code Scanning
+
+jobs:
+  bearer_scan_client:
+    name: Bearer Scan (Client)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Bearer CLI on Client
+        uses: bearer/bearer-action@v2
+        with:
+          directory: client/
+          args: "--format=rdjson --output=bearer-client-results.rdjson" # Genera RDJSON
+
+      - name: Upload Bearer Client results to Code Scanning
+        uses: github/codeql-action/upload-sarif@v3 # Acción para subir SARIF/RDJSON
+        with:
+          sarif_file: bearer-client-results.rdjson # Ruta al archivo SARIF/RDJSON
+          category: bearer-client # Categoría para identificar los resultados en GitHub
+
+  bearer_scan_server:
+    name: Bearer Scan (Server)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Bearer CLI on Server
+        uses: bearer/bearer-action@v2
+        with:
+          directory: server/
+          args: "--format=rdjson --output=bearer-server-results.rdjson" # Genera RDJSON
+
+      - name: Upload Bearer Server results to Code Scanning
+        uses: github/codeql-action/upload-sarif@v3 # Acción para subir SARIF/RDJSON
+        with:
+          sarif_file: bearer-server-results.rdjson # Ruta al archivo SARIF/RDJSON
+          category: bearer-server # Categoría para identificar los resultados en GitHub
