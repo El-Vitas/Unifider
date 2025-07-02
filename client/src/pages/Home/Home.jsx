@@ -29,7 +29,9 @@ const Home = () => {
         </div>
       </div>
 
-      <div className={`flex flex-row justify-between px-28 m-auto ${role === 'admin' ? 'space-x-26': 'space-x-32'} text-3xl`}>
+      <div
+        className={`flex flex-row justify-between px-28 m-auto ${role === 'admin' ? 'space-x-26' : 'space-x-32'} text-3xl`}
+      >
         <Link className="btn-card" to={routes.talleres}>
           {role === 'admin' ? 'Crear Taller' : 'Talleres'}
         </Link>

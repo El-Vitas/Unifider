@@ -5,7 +5,7 @@ import { useAuth } from '../../hooks/useAuth';
 
 const Logout = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth(); 
+  const { logout } = useAuth();
 
   useEffect(() => {
     if (!localStorage.getItem('authToken')) {

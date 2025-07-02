@@ -65,7 +65,8 @@ const CourseBigCard = ({
             return (
               <li key={idx}>
                 <div>
-                  <span className="font-medium">Horario:</span> {weekDayName} {start} - {end}
+                  <span className="font-medium">Horario:</span> {weekDayName}{' '}
+                  {start} - {end}
                 </div>
                 <div>
                   <span className="font-medium">Lugar:</span>{' '}
@@ -123,7 +124,7 @@ CourseBigCard.propTypes = {
         name: PropTypes.string,
         description: PropTypes.string,
       }),
-    })
+    }),
   ).isRequired,
   bookingsCount: PropTypes.number.isRequired,
   isBooked: PropTypes.bool.isRequired,

@@ -16,11 +16,14 @@ const CourseBigCards = () => {
   useEffect(() => {
     const fetchExtracurricular = async () => {
       try {
-        const response = await axios.get(`${config.apiUrl}/v1/workshop/${extracurricularName}`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
+        const response = await axios.get(
+          `${config.apiUrl}/v1/workshop/${extracurricularName}`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
           },
-        });
+        );
         setExtracurricular(response.data);
       } catch (err) {
         setError(err.message);
@@ -34,11 +37,14 @@ const CourseBigCards = () => {
     const fetchSections = async () => {
       try {
         const extracurricularId = extracurricular.id;
-        const response = await axios.get(`${config.apiUrl}/v1/section/card-info/${extracurricularId}`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
+        const response = await axios.get(
+          `${config.apiUrl}/v1/section/card-info/${extracurricularId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
           },
-        });
+        );
         setSections(response.data);
       } catch (err) {
         setError(err.message);
