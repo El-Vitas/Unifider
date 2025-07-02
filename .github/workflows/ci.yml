@@ -1,0 +1,50 @@
+name: Code Quality Checks
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  lint_and_format_client:
+    name: Client Lint & Format
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - run: npm ci
+      working-directory: client
+
+    - run: npm run lint
+      working-directory: client
+
+    - run: npm run format:check
+      working-directory: client
+
+  lint_and_format_server:
+    name: Server Lint & Format
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - run: npm ci
+      working-directory: server
+
+    - run: npm run lint
+      working-directory: server
+
+    - run: npm run format:check
+      working-directory: server
