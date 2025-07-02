@@ -1,0 +1,23 @@
+[
+ {
+  "RuleID": "generic-api-key",
+  "Description": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
+  "StartLine": 5,
+  "EndLine": 5,
+  "StartColumn": 84,
+  "EndColumn": 101,
+  "Match": "token=abc123def456",
+  "Secret": "abc123def456",
+  "File": "server/README.md",
+  "SymlinkFile": "",
+  "Commit": "920b6471cf24a5713930785094b72ddae482adbe",
+  "Link": "https://github.com/El-Vitas/Unifider/blob/920b6471cf24a5713930785094b72ddae482adbe/server/README.md?plain=1#L5",
+  "Entropy": 3.5849626,
+  "Author": "El-Vitas",
+  "Email": "jonathan.olivares.salinas@gmail.com",
+  "Date": "2025-04-15T00:28:58Z",
+  "Message": "first commit",
+  "Tags": [],
+  "Fingerprint": "920b6471cf24a5713930785094b72ddae482adbe:server/README.md:generic-api-key:5"
+ }
+]

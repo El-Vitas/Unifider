@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+/* Header.module.css */
+.Header {
+    background-color: #005E90;
+    margin-top: 0% !important;
+    padding: 17px;
+    color: white;
+    text-align: center;
+}
+
+body {
+    background-color: #F2F3F7;
+}
+
+.TitleHeader {
+    padding: 0;
+    color: white
+}
+.container-cards {
+    background-color: #fff;
+    border-radius: .5rem;
+    margin: 1rem; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+.card{
+    margin-top: 1%;
+    margin-bottom: 1%;
+    box-shadow: 7px 6px 12px -9px rgba(0,0,0,.62);
+}
+
+.btn-card {
+    display: inline-block; 
+    padding: 10px 20px; 
+    background-color: #005E90; 
+    color: white; 
+    border-radius: .5rem; 
+    transition: background-color 0.3s, transform 0.2s; 
+}
+
+.btn-card:hover {
+    background-color: #0d73ab; 
+    transform: scale(1.03); 
+}
+
+.btn-card:active {
+    transform: scale(0.97);
+}
+
+  
+.btn-header {
+    display: inline-block; 
+    transition: background-color 0.3s, transform 0.2s; 
+}
+
+.btn-header:hover {
+    transform: scale(1.05); 
+}
+
+.btn-header:active {
+    transform: scale(0.95);
+}
+
+.btn-menu {
+    display: flex; 
+    transition: background-color 0.3s, transform 0.2s; 
+}
+
+.btn-menu:hover {
+    transform: scale(1.05); 
+}
+
+.btn-menu:active {
+    transform: scale(0.95);
+}
+
+.btn-disabled{
+    display: inline-block; 
+    padding: 10px 20px; 
+    background-color: #313131a5; 
+    color: white; 
+    border-radius: .5rem; 
+}
