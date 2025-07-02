@@ -11,11 +11,14 @@ const Courts = () => {
   useEffect(() => {
     const fetchCourts = async () => {
       try {
-        const response = await axios.get(`${config.apiUrl}/v1/court/cards-info`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
+        const response = await axios.get(
+          `${config.apiUrl}/v1/court/cards-info`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
           },
-        });
+        );
         console.log('Fetched courts:', response.data);
 
         if (response.status !== 200) {

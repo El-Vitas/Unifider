@@ -25,7 +25,8 @@ const CourtCard = ({
             <ul className="list-disc list-inside space-y-1">
               {Object.entries(scheduleByDay).map(([day, hours]) => (
                 <li key={day}>
-                  <span className="font-semibold">{day}:</span> {hours.join(', ')}
+                  <span className="font-semibold">{day}:</span>{' '}
+                  {hours.join(', ')}
                 </li>
               ))}
             </ul>
@@ -37,12 +38,16 @@ const CourtCard = ({
             <span className="font-medium">Ubicación:</span> {location.name}
           </p>
           <p>
-            <span className="font-medium">Descripción:</span> {location.description}
+            <span className="font-medium">Descripción:</span>{' '}
+            {location.description}
           </p>
         </div>
 
         <div className="pt-4">
-          <Link className="btn-card inline-flex items-center gap-1" to={`${name}`}>
+          <Link
+            className="btn-card inline-flex items-center gap-1"
+            to={`${name}`}
+          >
             Horarios <RightOutlined />
           </Link>
         </div>
@@ -68,7 +73,8 @@ CourtCard.propTypes = {
     description: PropTypes.string.isRequired,
   }).isRequired,
   imageUrl: PropTypes.string,
-  scheduleByDay: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+  scheduleByDay: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string))
+    .isRequired,
 };
 
 export default CourtCard;

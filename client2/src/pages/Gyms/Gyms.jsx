@@ -11,14 +11,11 @@ const Gym = () => {
   useEffect(() => {
     const fetchGyms = async () => {
       try {
-        const response = await axios.get(
-          `${config.apiUrl}/v1/gym/cards-info`,
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
-          }
-        );
+        const response = await axios.get(`${config.apiUrl}/v1/gym/cards-info`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
         console.log('Fetched gyms:', response.data);
 
         if (response.status !== 200) {

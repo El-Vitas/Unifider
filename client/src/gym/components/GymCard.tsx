@@ -13,7 +13,10 @@ const CourtCard = (gym: GymType) => {
         </p>
 
         <div className="pt-4">
-          <Link className="btn-card inline-flex items-center gap-1" to={`${name}`}>
+          <Link
+            className="btn-card inline-flex items-center gap-1"
+            to={`${name}`}
+          >
             Horarios <RightOutlined />
           </Link>
         </div>
