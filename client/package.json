@@ -9,7 +9,7 @@
         "lint": "eslint .",
         "preview": "vite preview",
         "format": "prettier --write \"src/**/*.jsx\"",
-        "format:check": "prettier --check \"**/*.js\" \"**/*.ts\""
+        "format:check": "prettier --check \"**/*.js\" \"**/*.jsx\""
     },
     "dependencies": {
         "@ant-design/icons": "^5.5.1",

@@ -2,7 +2,7 @@ import { RightOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-const CourseCard = ({name, image, numCourses, weekdays}) => {
+const CourseCard = ({ name, image, numCourses, weekdays }) => {
   return (
     <div className="card w-64 border rounded-2xl">
       <div>

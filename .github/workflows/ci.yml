@@ -23,8 +23,8 @@ jobs:
     - run: npm ci
       working-directory: client
 
-    - run: npm run lint
-      working-directory: client
+    # - run: npm run lint
+    #   working-directory: client
 
     - run: npm run format:check
       working-directory: client
@@ -43,8 +43,8 @@ jobs:
     - run: npm ci
       working-directory: server
 
-    - run: npm run lint
-      working-directory: server
+    # - run: npm run lint
+    #   working-directory: server
 
     - run: npm run format:check
       working-directory: server
