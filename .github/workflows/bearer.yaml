@@ -4,7 +4,7 @@ name: Bearer CLI Code Scanning
 on:
   pull_request:
     branches:
-      - main
+      - master
       - dev
 
 # Permisos necesarios para que GitHub Actions pueda leer el código
