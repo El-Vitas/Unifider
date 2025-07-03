@@ -11,7 +11,7 @@ const BreadCrumbs = () => {
       {crumbs.map((crumb, index) => {
         const decodedCrumb = decodeURI(crumb);
         return (
-          <span key={ crumb }>
+          <span key={crumb}>
             {index !== crumbs.length - 1 ? (
               <Link to={`/${decodedCrumb}`}>
                 {' '}
