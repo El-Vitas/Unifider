@@ -20,8 +20,8 @@ const Header = () => {
     <div className="Header flex flex-row justify-between items-center">
       <TitleHeader />
       <div className="flex flex-1 justify-evenly">
-        {items.map((item, index) => (
-          <NavLinkItem key={index} to={item.route} name={item.name} />
+        {items.map((item) => (
+          <NavLinkItem key={item.name} to={item.route} name={item.name} />
         ))}
       </div>
 
