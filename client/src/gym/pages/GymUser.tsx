@@ -9,8 +9,8 @@ import ContainerCards from '../../common/components/ContainerCards';
 import BtnCard from '../../common/components/BtnPrimary';
 import { Link } from 'react-router-dom';
 import { RightOutlined } from '@ant-design/icons';
-
-const GymAdmin = () => {
+import { capitalize } from '../../common/utils/capitalize';
+const GymUser = () => {
   const url = useMemo(() => `${config.apiUrl}/gym/all`, []);
   const fetchGymsFn = useCallback(() => httpAdapter.get<GymType[]>(url), [url]);
 
@@ -45,17 +45,12 @@ const GymAdmin = () => {
               {...gym}
               key={gym.id}
               buttons={
-                <>
-                  <BtnCard as={Link} to={`/gym/edit/${gym.name.toLowerCase()}`}>
-                    Editar {' '}
+                <div className="flex gap-2 pt-2">
+                  <BtnCard as={Link} to={`/${capitalize(gym.name)}`}>
+                    Horarios {' '}
                     <RightOutlined />
                   </BtnCard>
-                  
-                  <BtnCard as={Link} to={`/gym/delete/${gym.name.toLowerCase()}`}>
-                    Eliminar {' '}
-                    <RightOutlined />
-                  </BtnCard>
-                </>
+                </div>
               }
             />
         ))}
@@ -64,4 +59,4 @@ const GymAdmin = () => {
   );
 };
 
-export default GymAdmin;
+export default GymUser;

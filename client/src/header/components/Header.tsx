@@ -17,7 +17,7 @@ const Header = () => {
   });
 
   return (
-    <div className="Header flex flex-row justify-between items-center">
+    <div className="flex flex-row items-center justify-between p-4 text-center bg-primary">
       <TitleHeader />
       <div className="flex flex-1 justify-evenly">
         {items.map((item) => (
@@ -27,7 +27,7 @@ const Header = () => {
 
       <div className="relative ml-8" ref={dropdownContainerRef}>
         <button
-          className="btn-menu font-medium text-white flex items-center gap-2"
+          className="flex items-center gap-2 font-medium text-white transition-transform hover:scale-[1.04] active:scale-[0.96]"
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         >
           <span>Usuario</span>

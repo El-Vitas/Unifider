@@ -5,6 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
+        "dev:host": "vite --host",
         "build": "tsc -b && vite build",
         "format": "prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
         "format:check": "prettier --check \"src/**/*.ts\" \"src/**/*.tsx\"",
@@ -20,6 +21,7 @@
         "react-dom": "^19.1.0",
         "react-icons": "^5.5.0",
         "react-router-dom": "^7.6.3",
+        "react-select": "^5.10.1",
         "react-toastify": "^11.0.5",
         "tailwindcss": "^4.1.11"
     },

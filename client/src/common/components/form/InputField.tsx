@@ -1,6 +1,5 @@
-// src/common/components/InputField.tsx
 import React from 'react';
-interface FormFieldProps {
+interface InputFieldProps {
   id: string;
   label: string;
   type?: React.HTMLInputTypeAttribute;
@@ -8,9 +7,10 @@ interface FormFieldProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   required?: boolean;
+  props?: React.InputHTMLAttributes<HTMLInputElement>;
 }
 
-const FormAuthField = ({
+const InputField = ({
   id,
   label,
   type = 'text',
@@ -18,10 +18,11 @@ const FormAuthField = ({
   onChange,
   placeholder,
   required = false,
-}: FormFieldProps) => {
+  props = {},
+}: InputFieldProps) => {
   return (
     <div className="mb-4">
-      <label htmlFor={id} className="mb-4">
+      <label htmlFor={id} className="block mb-2">
         {label}:
       </label>
       <input
@@ -30,11 +31,12 @@ const FormAuthField = ({
         value={value}
         onChange={onChange}
         required={required}
-        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="block w-full px-4 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary"
         placeholder={placeholder}
+        {...props}
       />
     </div>
   );
 };
 
-export default FormAuthField;
+export default InputField;

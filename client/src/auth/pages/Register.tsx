@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import FormAuthField from '../components/FormAuthField';
+import InputField from '../../common/components/form/InputField';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -19,7 +19,7 @@ const Register = () => {
         </h2>
 
         <form onSubmit={handleSubmit}>
-          <FormAuthField
+          <InputField
             id="fullName"
             label="Nombre Completo"
             type="text"
@@ -29,7 +29,7 @@ const Register = () => {
             required={true}
           />
 
-          <FormAuthField
+          <InputField
             id="email"
             label="Correo Electrónico"
             type="email"
@@ -39,7 +39,7 @@ const Register = () => {
             required={true}
           />
 
-          <FormAuthField
+          <InputField
             id="password"
             label="Contraseña"
             type="password"
@@ -49,7 +49,7 @@ const Register = () => {
             required={true}
           />
 
-          <FormAuthField
+          <InputField
             id="confirmPassword"
             label="Confirmar Contraseña"
             type="password"

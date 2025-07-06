@@ -17,10 +17,10 @@ type ProfileDropdownItem = {
 
 export const getMainMenuItems = (role: RoleType): MainMenuItem[] => {
   const routes = {
-    workshops: '/workshops',
-    teams: '/selecciones',
-    gyms: '/gyms',
-    courts: '/courts',
+    workshops: '/workshop',
+    teams: '/team',
+    gyms: '/gym',
+    courts: '/court',
   };
 
   return [

@@ -1,12 +1,14 @@
 import { Controller, Get } from '@nestjs/common';
 import { GymService } from './gym.service';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('gym')
 export class GymController {
   constructor(private readonly gymService: GymService) {}
 
-  @Get('cards-info')
+  @Public()
+  @Get('all')
   findAll() {
-    return this.gymService.findCardsInfo();
+    return this.gymService.findGymsData();
   }
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import FormField from '../components/FormAuthField';
+import InputField from '../../common/components/form/InputField';
 
 const Login = () => {
   const [email, setEmail] = useState<string>('');
@@ -19,7 +19,7 @@ const Login = () => {
         </h2>
 
         <form onSubmit={handleSubmit}>
-          <FormField
+          <InputField
             id="email"
             label="Correo Electrónico"
             type="email"
@@ -29,7 +29,7 @@ const Login = () => {
             required={true}
           />
 
-          <FormField
+          <InputField
             id="password"
             label="Contraseña"
             type="password"

@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { BadGatewayException } from '@nestjs/common/exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { daysMap } from 'src/common/constants';
+
 @Injectable()
 export class GymService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findCardsInfo() {
+  async findGymsData() {
     try {
       const gyms = await this.prisma.gym.findMany({
         select: {
@@ -41,13 +43,14 @@ export class GymService {
       const gymsWithSchedules = gyms.map((gym) => {
         const scheduleByDay = gym.schedule?.timeBlocks
           ? this.groupTimeBlocks(gym.schedule.timeBlocks)
-          : [];
+          : {};
 
         return {
           id: gym.id,
           name: gym.name,
           description: gym.description,
           location: gym.location,
+          imageUrl: gym.imageUrl,
           scheduleByDay,
         };
       });
@@ -58,16 +61,6 @@ export class GymService {
       throw new BadGatewayException('Error fetching courts');
     }
   }
-
-  private readonly daysMap: Record<number, string> = {
-    1: 'Lunes',
-    2: 'Martes',
-    3: 'Miercoles',
-    4: 'Jueves',
-    5: 'Viernes',
-    6: 'Sabado',
-    7: 'Domingo',
-  };
 
   private groupTimeBlocks(
     timeBlocks: { dayOfWeek: number; startTime: Date; endTime: Date }[],
@@ -82,7 +75,7 @@ export class GymService {
     let mergeInProgress: { start: Date; end: Date } | null = null;
 
     for (const block of timeBlocks) {
-      const dayName = this.daysMap[block.dayOfWeek];
+      const dayName = daysMap[block.dayOfWeek];
       if (!result[dayName]) {
         result[dayName] = [];
       }
