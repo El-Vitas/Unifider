@@ -1,21 +1,17 @@
-import React from 'react';
 import { GrLogout } from 'react-icons/gr';
 import { FaUserCircle } from 'react-icons/fa';
-
-type RoleType = 'admin' | 'user';
-
-type MainMenuItem = {
-  name: string;
-  route: string;
-};
-
-type ProfileDropdownItem = {
-  to: string;
-  name: string;
-  icon?: React.ReactElement;
-};
+import { menuType } from '../constants';
+import type { MainMenuItem, ProfileDropdownItem } from '../types';
+import type { RoleType } from '../types';
 
 export const getMainMenuItems = (role: RoleType): MainMenuItem[] => {
+  if (role === 'admin') {
+    return getAdminMenuItems();
+  }
+  return getUserMenuItems();
+}
+
+const getUserMenuItems = (): MainMenuItem[] => {
   const routes = {
     workshops: '/workshop',
     teams: '/team',
@@ -25,23 +21,63 @@ export const getMainMenuItems = (role: RoleType): MainMenuItem[] => {
 
   return [
     {
-      name: role === 'admin' ? 'Crear Taller' : 'Talleres',
+      name: 'Talleres',
       route: routes.workshops,
     },
     {
-      name: role === 'admin' ? 'Crear Selección' : 'Selecciones',
+      name: 'Selecciones',
       route: routes.teams,
     },
     {
-      name: role === 'admin' ? 'Crear Gimnasio' : 'Gimnasio',
+      name: 'Gimnasios',
       route: routes.gyms,
     },
     {
-      name: role === 'admin' ? 'Crear Cancha' : 'Canchas',
+      name: 'Canchas',
       route: routes.courts,
     },
   ];
 };
+
+const getAdminMenuItems = (): MainMenuItem[] => {
+  const routes = {
+    workshops: '/workshop',
+    teams: '/team',
+    gyms: '/gym',
+    courts: '/court',
+    equipment: '/equipment',
+  };
+
+  return [
+    {
+      name: 'Talleres',
+      route: routes.workshops,
+    },
+    {
+      name: 'Selecciones',
+      route: routes.teams,
+    },
+    {
+      name: 'Gimnasios',
+      route: routes.gyms,
+      type: menuType.Dropdown,
+      dropdownItems: [
+        {
+          to: '/equipment',
+          name: 'Equipamiento',  
+        },
+      ],
+    },
+    {
+      name: 'Canchas',
+      route: routes.courts,
+    },
+    {
+      name: 'Ubicaciones',
+      route: '/location',
+    }
+  ];
+}
 
 export const getProfileDropdownItems = (): ProfileDropdownItem[] => {
   const routes = {
@@ -53,12 +89,12 @@ export const getProfileDropdownItems = (): ProfileDropdownItem[] => {
     {
       to: routes.profile,
       name: 'Perfil',
-      icon: <FaUserCircle className="text-white" />,
+      icon: <FaUserCircle className="text-gray-700" />,
     },
     {
       to: routes.logout,
       name: 'Cerrar Sesión',
-      icon: <GrLogout className="text-white" />,
+      icon: <GrLogout className="text-gray-700" />,
     },
   ];
 };
