@@ -1,23 +1,114 @@
 import React from 'react';
-import EditForm from '../../common/components/EditForm';
+import MainForm from '../../common/components/MainForm';
 import InputField from '../../common/components/form/InputField';
 import SelectField from '../../common/components/form/SelectField';
 import MultiSelectField from '../../common/components/form/MultiSelectField';
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react'; // Added explicit imports
 import InputFileField from '../../common/components/form/InputFileField';
+import { useParams } from 'react-router-dom';
+import { useAsync } from '../../common/hooks/useAsync';
+import config from '../../config';
+import { customToast } from '../../common/utils/customToast';
+import { httpAdapter } from '../../common/adapters/httpAdapter';
+import type { GymType } from '../entities';
+import type { LocationType } from '../../location/entities';
+import type { OptionType } from '../../common/types';
 
 const GymEdit = () => {
-  const [name, setName] = React.useState('a');
-  const [description, setDescription] = React.useState(
-    'Una descripción del gimnasio',
+  const [name, setName] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [location, setLocation] = useState<string>('');
+  const [equipment, setEquipment] = useState<string[]>([]);
+
+  const { gymName } = useParams<{ gymName: string }>();
+
+  const urlGym = useMemo(() => `${config.apiUrl}/gym/${gymName}`, [gymName]);
+  const urlLocation = useMemo(() => `${config.apiUrl}/location`, []);
+
+  const fetchGymFn = useCallback(
+    () => httpAdapter.get<GymType>(urlGym),
+    [urlGym],
   );
-  const [location, setLocation] = React.useState('ubi 1');
-  const [selected, setSelected] = useState<string[]>([]);
+  const fetchLocationsFn = useCallback(
+    () => httpAdapter.get<LocationType[]>(urlLocation),
+    [urlLocation],
+  );
+
+  const {
+    data: gymData,
+    loading: gymLoading,
+    error: gymError,
+    execute: fetchGym,
+  } = useAsync<GymType>(fetchGymFn, 'Failed to fetch Gym');
+
+  const {
+    data: locationsData,
+    loading: locationsLoading,
+    error: locationsError,
+    execute: fetchLocations,
+  } = useAsync<LocationType[]>(fetchLocationsFn, 'Failed to fetch Locations');
+
+  const locationOptions = useMemo<OptionType[]>(() => {
+    if (locationsData) {
+      return locationsData.map((loc) => ({
+        label: loc.name,
+        value: loc.name,
+      }));
+    }
+    return [];
+  }, [locationsData]);
+
+  useEffect(() => {
+    fetchGym();
+    fetchLocations();
+  }, [fetchGym, fetchLocations]); 
+
+  useEffect(() => {
+    if (gymData) {
+      setName(gymData.name);
+      setDescription(gymData.description);
+      setEquipment(gymData.equipment || []); 
+      setLocation(gymData.location?.name || '');
+    }
+  }, [gymData]);
+
+  useEffect(() => {
+    if (gymError) {
+      customToast.error(gymError);
+    }
+  }, [gymError]);
+
+  useEffect(() => {
+    if (locationsError) {
+      customToast.error(locationsError);
+    }
+  }, [locationsError]);
+
+  const hasError = gymError || locationsError;
+
+  if (hasError) {
+    return (
+      <div className="mt-6 text-center text-red-600">
+        Ocurrió un error al cargar los datos. Por favor, inténtelo de nuevo.
+      </div>
+    );
+  }
+
+  if (!gymData) {
+    return (
+      <div className="mt-6 text-center">
+        No se encontraron datos para este gimnasio.
+      </div>
+    );
+  }
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(`Form submitted ${e}`);
-    console.log(selected);
+    console.log('Form submitted');
+    console.log('Name:', name);
+    console.log('Description:', description);
+    console.log('Location:', location);
+    console.log('Equipment:', equipment);
   };
 
   const onNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,10 +119,18 @@ const GymEdit = () => {
     setDescription(e.target.value);
   };
 
+  const onLocationChange = (selectedValue: string) => {
+    setLocation(selectedValue);
+  };
+
+  const onEquipmentChange = (selectedValues: string[]) => {
+    setEquipment(selectedValues);
+  };
+
   return (
-    <EditForm onSubmit={onSubmit} submitButtonText="Guardar Cambios">
+    <MainForm onSubmit={onSubmit} submitButtonText="Guardar Cambios">
       <>
-        <div className="justify-between">
+        <div className="space-y-4">
           <InputField
             id="name"
             label="Nombre del Gimnasio"
@@ -41,8 +140,8 @@ const GymEdit = () => {
             placeholder="Nombre del gimnasio"
             required={true}
             props={{ autoComplete: 'off' }}
+            isLoading={gymLoading}
           />
-
           <InputField
             id="description"
             label="Descripción"
@@ -52,8 +151,8 @@ const GymEdit = () => {
             placeholder="Descripción del gimnasio"
             required={true}
             props={{ autoComplete: 'off' }}
+            isLoading={gymLoading}
           />
-
           <InputFileField
             id="gymImage"
             label="Imagen del Gimnasio"
@@ -61,36 +160,32 @@ const GymEdit = () => {
             required={false}
             accept="image/*"
             multiple={false}
+            isLoading={gymLoading}
           />
-
           <SelectField
             id="location"
             label="Ubicación"
             value={location}
-            onChange={setLocation}
-            options={[
-              { value: 'gym', label: 'Gimnasio' },
-              { value: 'crossfit', label: 'Crossfit' },
-              { value: 'yoga', label: 'Yoga' },
-              { value: 'pilates', label: 'Pilates' },
-            ]}
+            onChange={onLocationChange}
+            options={locationOptions}
+            isLoading={gymLoading || locationsLoading}
           />
-
           <MultiSelectField
             id="equipment"
             label="Equipamiento"
-            value={selected}
-            onChange={setSelected}
+            value={equipment}
+            onChange={onEquipmentChange}
             options={[
               { label: 'Manzana', value: 'manzana' },
               { label: 'Banana', value: 'banana' },
               { label: 'Pera', value: 'pera' },
               { label: 'Naranja', value: 'naranja' },
             ]}
+            isLoading={gymLoading}
           />
         </div>
       </>
-    </EditForm>
+    </MainForm>
   );
 };
 

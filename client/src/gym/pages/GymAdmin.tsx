@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom';
 import { RightOutlined } from '@ant-design/icons';
 
 const GymAdmin = () => {
-  const url = useMemo(() => `${config.apiUrl}/gym/all`, []);
+  const url = useMemo(() => `${config.apiUrl}/gym`, []);
   const fetchGymsFn = useCallback(() => httpAdapter.get<GymType[]>(url), [url]);
 
   const {

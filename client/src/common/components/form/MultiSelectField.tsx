@@ -13,6 +13,7 @@ type SelectFieldProps = {
   onChange: (value: string[]) => void;
   options: OptionType[];
   props?: Record<string, unknown>;
+  isLoading?: boolean;
 };
 
 const MultiSelectField = ({
@@ -22,10 +23,20 @@ const MultiSelectField = ({
   onChange,
   options,
   props = {},
+  isLoading = false,
 }: SelectFieldProps) => {
   const computedOptions = useMemo(() => {
     return [{ value: 'all', label: 'Seleccionar todo' }, ...options];
   }, [options]);
+
+  if (isLoading) {
+    return (
+      <div className="mb-4 mt-6 animate-pulse">
+        <div className="h-4 bg-gray-300 rounded w-1/4 mb-1"></div>
+        <div className="h-10 mt-2 bg-gray-200 rounded"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-4">

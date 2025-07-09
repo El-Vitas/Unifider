@@ -1,17 +1,14 @@
 import Select from 'react-select';
-
-type OptionType = {
-  value: string;
-  label: string;
-};
+import type { OptionType } from '../../types';
 
 type SelectFieldProps = {
   id: string;
   label: string;
-  value: string; // valor seleccionado
+  value: string;
   onChange: (value: string) => void;
   options: OptionType[];
   props?: Record<string, unknown>;
+  isLoading?: boolean;
 };
 
 const SelectField = ({
@@ -21,7 +18,17 @@ const SelectField = ({
   onChange,
   options,
   props = {},
+  isLoading = false,
 }: SelectFieldProps) => {
+    if (isLoading) {
+    return (
+      <div className="mb-4 mt-6 animate-pulse">
+        <div className="h-4 bg-gray-300 rounded w-1/4 mb-1"></div>
+        <div className="h-10 mt-2 bg-gray-200 rounded"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="mb-4">
       <label htmlFor={id} className="block mb-2">

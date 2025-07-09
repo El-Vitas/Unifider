@@ -1,16 +1,16 @@
 import BtnPrimary from "./BtnPrimary";
 
-type EditFormProps = {
+type MainFormProps = {
   children: React.ReactNode;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   submitButtonText?: string;
 };
 
-const EditForm = ({
+const MainForm = ({
   children,
   onSubmit,
   submitButtonText = 'Guardar',
-}: EditFormProps) => {
+}: MainFormProps) => {
   return (
     <div className="flex justify-center items-center w-full">
       <form
@@ -27,4 +27,4 @@ const EditForm = ({
   );
 };
 
-export default EditForm;
+export default MainForm;

@@ -14,6 +14,7 @@ export class GymService {
           id: true,
           name: true,
           description: true,
+          equipment: true,
           imageUrl: true,
           location: {
             select: {
@@ -59,6 +60,112 @@ export class GymService {
     } catch (e) {
       console.log(e);
       throw new BadGatewayException('Error fetching courts');
+    }
+  }
+
+  async findOneById(id: string) {
+    try {
+      const gym = await this.prisma.gym.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          equipment: true,
+          imageUrl: true,
+          location: {
+            select: {
+              name: true,
+              description: true,
+            },
+          },
+          schedule: {
+            select: {
+              timeBlocks: {
+                select: {
+                  dayOfWeek: true,
+                  startTime: true,
+                  endTime: true,
+                },
+                orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }],
+              },
+            },
+          },
+        },
+      });
+
+      if (!gym) {
+        throw new BadGatewayException('Gym not found');
+      }
+
+      const scheduleByDay = gym.schedule?.timeBlocks
+        ? this.groupTimeBlocks(gym.schedule.timeBlocks)
+        : {};
+
+      return {
+        id: gym.id,
+        name: gym.name,
+        description: gym.description,
+        location: gym.location,
+        imageUrl: gym.imageUrl,
+        scheduleByDay,
+      };
+    } catch (e) {
+      console.log(e);
+      throw new BadGatewayException('Error fetching gym');
+    }
+  }
+
+  async findOneByName(name: string) {
+    try {
+      const gym = await this.prisma.gym.findUnique({
+        where: { name },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          equipment: true,
+          imageUrl: true,
+          location: {
+            select: {
+              name: true,
+              description: true,
+            },
+          },
+          schedule: {
+            select: {
+              timeBlocks: {
+                select: {
+                  dayOfWeek: true,
+                  startTime: true,
+                  endTime: true,
+                },
+                orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }],
+              },
+            },
+          },
+        },
+      });
+
+      if (!gym) {
+        throw new BadGatewayException('Gym not found');
+      }
+
+      const scheduleByDay = gym.schedule?.timeBlocks
+        ? this.groupTimeBlocks(gym.schedule.timeBlocks)
+        : {};
+
+      return {
+        id: gym.id,
+        name: gym.name,
+        description: gym.description,
+        location: gym.location,
+        imageUrl: gym.imageUrl,
+        scheduleByDay,
+      };
+    } catch (e) {
+      console.log(e);
+      throw new BadGatewayException('Error fetching gym');
     }
   }
 

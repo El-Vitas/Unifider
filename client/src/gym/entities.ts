@@ -5,6 +5,7 @@ export type GymType = {
   name: string;
   description: string;
   location: LocationType
+  equipment: string[];
   imageUrl?: string;
   scheduleByDay: Record<string, string[]>;
 };

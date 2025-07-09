@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 interface FileInputFieldProps {
   id: string;
@@ -7,6 +7,7 @@ interface FileInputFieldProps {
   required?: boolean;
   accept?: string;
   multiple?: boolean;
+  isLoading?: boolean;
 }
 
 const InputFileField = ({
@@ -16,18 +17,30 @@ const InputFileField = ({
   required = false,
   accept,
   multiple = false,
+  isLoading = false,
 }: FileInputFieldProps) => {
-  const [fileName, setFileName] = useState<string>("Ningún archivo seleccionado");
+  const [fileName, setFileName] = useState<string>(
+    'Ningún archivo seleccionado',
+  );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e);
     if (e.target.files && e.target.files.length > 0) {
       const names = Array.from(e.target.files).map((file) => file.name);
-      setFileName(names.join(", "));
+      setFileName(names.join(', '));
     } else {
-      setFileName("Ningún archivo seleccionado");
+      setFileName('Ningún archivo seleccionado');
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="mb-4 mt-6 animate-pulse">
+        <div className="h-4 bg-gray-300 rounded w-1/4 mb-1"></div>
+        <div className="h-10 mt-2 bg-gray-200 rounded"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-4">
@@ -39,7 +52,9 @@ const InputFileField = ({
         >
           Subir archivo
         </label>
-        <span className="text-gray-600 text-sm truncate max-w-xs">{fileName}</span>
+        <span className="text-gray-600 text-sm truncate max-w-xs">
+          {fileName}
+        </span>
       </div>
       <input
         type="file"

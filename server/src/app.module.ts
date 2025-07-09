@@ -10,7 +10,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { CommonModule } from './common/common.module';
 import { AuthModule } from './auth/auth.module';
 import { RoleModule } from './role/role.module';
-import { LocationsModule } from './locations/locations.module';
+import { LocationModule } from './location/location.module';
 import { SectionModule } from './section/section.module';
 
 @Module({
@@ -28,7 +28,7 @@ import { SectionModule } from './section/section.module';
     CommonModule,
     AuthModule,
     RoleModule,
-    LocationsModule,
+    LocationModule,
     SectionModule,
   ],
 })

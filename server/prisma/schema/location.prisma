@@ -1,7 +1,7 @@
 model Location {
     id          String   @id @default(uuid())
     name        String   @unique // Nombre del lugar físico
-    description String?
+    description String
     createdBy   String // ID del User que lo creó
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt

@@ -1,4 +1,5 @@
 import React from 'react';
+
 interface InputFieldProps {
   id: string;
   label: string;
@@ -8,6 +9,7 @@ interface InputFieldProps {
   placeholder?: string;
   required?: boolean;
   props?: React.InputHTMLAttributes<HTMLInputElement>;
+  isLoading?: boolean;
 }
 
 const InputField = ({
@@ -19,7 +21,17 @@ const InputField = ({
   placeholder,
   required = false,
   props = {},
+  isLoading = false,
 }: InputFieldProps) => {
+  if (isLoading) {
+    return (
+      <div className="mb-4 mt-6 animate-pulse">
+        <div className="h-4 bg-gray-300 rounded w-1/4 mb-1"></div>
+        <div className="h-10 mt-2 bg-gray-200 rounded"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="mb-4">
       <label htmlFor={id} className="block mb-2">

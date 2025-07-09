@@ -1,10 +1,56 @@
 import ContainerCards from '../../common/components/ContainerCards';
-
+import { useAsync } from '../../common/hooks/useAsync';
+import { useEffect, useMemo, useCallback } from 'react';
+import config from '../../config';
+import { customToast } from '../../common/utils/customToast';
+import { httpAdapter } from '../../common/adapters/httpAdapter';
+import type { LocationType } from '../entities';
+import LocationCard from '../components/LocationCard';
+import BtnPrimary from '../../common/components/BtnPrimary';
+import { Link } from 'react-router-dom';
 const Location = () => {
+  const url = useMemo(() => `${config.apiUrl}/location`, []);
+  const fetchLocationsFn = useCallback(
+    () => httpAdapter.get<LocationType[]>(url),
+    [url],
+  );
+
+  const {
+    data,
+    loading,
+    error,
+    execute: fetchGyms,
+  } = useAsync<LocationType[]>(fetchLocationsFn, 'Failed to fetch Locations');
+
+  useEffect(() => {
+    fetchGyms();
+  }, [fetchGyms]);
+
+  const locations = data ?? [];
+
+  useEffect(() => {
+    if (error) {
+      customToast.error(error);
+    }
+  }, [error]);
+
+  if (loading) {
+    return <div className="mt-6 text-center">Loading...</div>;
+  }
+
   return (
     <ContainerCards>
       <>
-        <h1 className="text-2xl font-bold mb-4">LocatioSADASns</h1>
+        <div className="flex justify-end w-full mt-4">
+          <BtnPrimary as={Link} to="/location/create">
+            Crear ubicación
+          </BtnPrimary>
+        </div>
+        <div className="flex flex-wrap justify-center gap-6">
+          {locations.map((location) => (
+            <LocationCard {...location} key={location.id} />
+          ))}
+        </div>
       </>
     </ContainerCards>
   );
