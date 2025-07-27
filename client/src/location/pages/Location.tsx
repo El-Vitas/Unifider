@@ -6,13 +6,21 @@ import { customToast } from '../../common/utils/customToast';
 import { httpAdapter } from '../../common/adapters/httpAdapter';
 import type { LocationType } from '../entities';
 import LocationCard from '../components/LocationCard';
-import BtnPrimary from '../../common/components/BtnPrimary';
+import BtnPrimary from '../../common/components/button/BtnPrimary';
 import { Link } from 'react-router-dom';
+import type { CustomHttpResponse } from '../../common/types';
+import {useAuth} from '../../common/hooks/useAuth';
+
 const Location = () => {
   const url = useMemo(() => `${config.apiUrl}/location`, []);
+  const authToken = useAuth().authToken;
   const fetchLocationsFn = useCallback(
-    () => httpAdapter.get<LocationType[]>(url),
-    [url],
+    () => httpAdapter.get<LocationType[]>(url, {
+      headers: {
+        'authorization': `Bearer ${authToken}`,
+      }
+    }),
+    [url, authToken],
   );
 
   const {
@@ -20,13 +28,13 @@ const Location = () => {
     loading,
     error,
     execute: fetchGyms,
-  } = useAsync<LocationType[]>(fetchLocationsFn, 'Failed to fetch Locations');
+  } = useAsync<CustomHttpResponse<LocationType[]>>(fetchLocationsFn, 'Failed to fetch Locations');
 
   useEffect(() => {
     fetchGyms();
   }, [fetchGyms]);
 
-  const locations = data ?? [];
+  const locations = data?.data ?? [];
 
   useEffect(() => {
     if (error) {

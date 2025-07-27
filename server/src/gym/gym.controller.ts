@@ -1,21 +1,22 @@
 import { Controller, Get } from '@nestjs/common';
 import { GymService } from './gym.service';
-import { Public } from 'src/common/decorators/public.decorator';
 import { Param } from '@nestjs/common';
 import { isUUID } from 'class-validator';
-
+import { Permissions } from 'src/common/decorators/permissions.decorator';
+import { permissionFactory } from 'src/common/permissions/permissionFactory';
+import { Resource } from 'src/common/permissions/permission.enum';
 @Controller('gym')
 export class GymController {
   constructor(private readonly gymService: GymService) {}
 
-  @Public()
   @Get()
+  @Permissions(permissionFactory.canRead(Resource.GYM))
   findAll() {
     return this.gymService.findGymsData();
   }
 
-  @Public()
   @Get(':value')
+  @Permissions(permissionFactory.canRead(Resource.GYM))
   async findOne(@Param('value') value: string) {
     if (isUUID(value)) {
       return await this.gymService.findOneById(value);

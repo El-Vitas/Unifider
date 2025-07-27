@@ -5,6 +5,8 @@ import { AuthGuard } from 'src/guard/auth.guard';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { RolesGuard } from './guard/role.guard';
+import { PermissionsGuard } from './guard/permission.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,7 +20,13 @@ async function bootstrap() {
   const reflector = app.get(Reflector);
   const jwtService = app.get(JwtService);
   const configService = app.get(ConfigService);
-  app.useGlobalGuards(new AuthGuard(jwtService, configService, reflector));
+
+  //The order of guards matters, AuthGuard should be first
+  app.useGlobalGuards(
+    new AuthGuard(jwtService, configService, reflector),
+    new RolesGuard(reflector),
+    new PermissionsGuard(reflector),
+  );
 
   app.enableCors({
     origin: `${configService.get<string>('frontendUrl')}`,

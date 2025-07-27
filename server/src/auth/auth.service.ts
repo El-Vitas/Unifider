@@ -10,6 +10,7 @@ import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import { RoleService } from 'src/role/role.service';
+import { UserRole } from 'src/role/entities/roles';
 
 @Injectable()
 export class AuthService {
@@ -28,7 +29,7 @@ export class AuthService {
       throw new BadRequestException('User already exists');
     }
     const hashedPassword = await bcryptjs.hash(registerDto.password, 10);
-    const userRole = await this.roleService.findOneByName('user');
+    const userRole = await this.roleService.findOneByName(UserRole.USER);
     const createUserDto: CreateUserDto = {
       ...registerDto,
       password: hashedPassword,

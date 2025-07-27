@@ -1,14 +1,14 @@
-// src/location/pages/LocationEdit.tsx
-
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import MainForm from '../../common/components/MainForm'; // Asumiendo que MainForm es tu DataForm general
-import LocationForm from '../components/LocationForm'; // Importa el componente de los campos
+import MainForm from '../../common/components/MainForm'; 
+import LocationForm from '../components/LocationForm';
 import { useParams } from 'react-router-dom';
 import { useAsync } from '../../common/hooks/useAsync';
 import config from '../../config';
 import { customToast } from '../../common/utils/customToast';
 import { httpAdapter } from '../../common/adapters/httpAdapter';
 import type { LocationType } from '../entities';
+import type { CustomHttpResponse } from '../../common/types';
+import { useAuth } from '../../common/hooks/useAuth';
 
 const LocationEdit = () => {
   const { locationName } = useParams<{ locationName: string }>();
@@ -17,52 +17,56 @@ const LocationEdit = () => {
     name: '',
     description: '',
   });
-  const [submitting, setSubmitting] = useState(false); // Estado para el envío de actualización
-
+  const [submitting, setSubmitting] = useState(false); 
   const urlLocation = useMemo(
     () => `${config.apiUrl}/location/${locationName}`,
     [locationName],
   );
+  const authToken = useAuth().authToken;
 
   const fetchLocationFn = useCallback(
-    () => httpAdapter.get<LocationType>(urlLocation),
-    [urlLocation],
+    () => httpAdapter.get<LocationType>(urlLocation, {
+      headers: {
+        'authorization': `Bearer ${authToken}`,
+      }
+    }),
+    [urlLocation, authToken],
   );
 
   const updateLocationFn = useCallback(
     (data: LocationType) =>
-      httpAdapter.put<LocationType>(`${config.apiUrl}/location/update`, data), // Ajusta la URL si el ID va en la URL
-    [], // Esta función no depende de nada que cambie aquí, el data se pasa en el submit
+      httpAdapter.put<LocationType>(`${config.apiUrl}/location/update`, data, {
+        headers: {
+          'authorization': `Bearer ${authToken}`,
+        }
+      }),
+    [authToken],
   );
 
   const {
-    data: initialLocationData, // Renombrado para mayor claridad
+    data: initialLocationData,
     loading: fetchLoading,
     error: fetchError,
     execute: fetchLocation,
-  } = useAsync<LocationType>(fetchLocationFn, 'Failed to fetch Location');
+  } = useAsync<CustomHttpResponse<LocationType>>(fetchLocationFn, 'Failed to fetch Location');
 
-  // Cargar datos iniciales al montar o al cambiar locationName
   useEffect(() => {
     fetchLocation();
   }, [fetchLocation]);
 
-  // Actualizar formData cuando initialLocationData llega
   useEffect(() => {
-    if (initialLocationData) {
-      setFormData(initialLocationData); // Establece todos los datos iniciales
+    if (initialLocationData?.data) {
+      setFormData(initialLocationData.data); 
     }
   }, [initialLocationData]);
 
-  // Handler para recibir los cambios de los campos desde LocationForm
   const handleFormChange = useCallback(
     (data: { name: string; description: string }) => {
-      setFormData((prev) => ({ ...prev, ...data })); // Combina con el ID existente
+      setFormData((prev) => ({ ...prev, ...data }));
     },
     [],
   );
 
-  // Manejo de errores
   useEffect(() => {
     if (fetchError) {
       customToast.error(fetchError);

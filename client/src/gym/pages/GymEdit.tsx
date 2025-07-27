@@ -12,13 +12,15 @@ import { customToast } from '../../common/utils/customToast';
 import { httpAdapter } from '../../common/adapters/httpAdapter';
 import type { GymType } from '../entities';
 import type { LocationType } from '../../location/entities';
-import type { OptionType } from '../../common/types';
-
+import type { CustomHttpResponse, OptionType } from '../../common/types';
+import { useAuth } from '../../common/hooks/useAuth';
 const GymEdit = () => {
   const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [location, setLocation] = useState<string>('');
   const [equipment, setEquipment] = useState<string[]>([]);
+
+  const authToken = useAuth().authToken;
 
   const { gymName } = useParams<{ gymName: string }>();
 
@@ -26,12 +28,18 @@ const GymEdit = () => {
   const urlLocation = useMemo(() => `${config.apiUrl}/location`, []);
 
   const fetchGymFn = useCallback(
-    () => httpAdapter.get<GymType>(urlGym),
-    [urlGym],
+    () => httpAdapter.get<GymType>(urlGym, {
+      headers: {
+        'authorization': `Bearer ${authToken}`,
+      }
+    }), [urlGym, authToken],
   );
   const fetchLocationsFn = useCallback(
-    () => httpAdapter.get<LocationType[]>(urlLocation),
-    [urlLocation],
+    () => httpAdapter.get<LocationType[]>(urlLocation, {
+      headers: {
+        'authorization': `Bearer ${authToken}`,
+      }
+    }), [urlLocation, authToken],
   );
 
   const {
@@ -39,18 +47,21 @@ const GymEdit = () => {
     loading: gymLoading,
     error: gymError,
     execute: fetchGym,
-  } = useAsync<GymType>(fetchGymFn, 'Failed to fetch Gym');
+  } = useAsync<CustomHttpResponse<GymType>>(fetchGymFn, 'Failed to fetch Gym');
 
   const {
     data: locationsData,
     loading: locationsLoading,
     error: locationsError,
     execute: fetchLocations,
-  } = useAsync<LocationType[]>(fetchLocationsFn, 'Failed to fetch Locations');
+  } = useAsync<CustomHttpResponse<LocationType[]>>(
+    fetchLocationsFn,
+    'Failed to fetch Locations',
+  );
 
   const locationOptions = useMemo<OptionType[]>(() => {
-    if (locationsData) {
-      return locationsData.map((loc) => ({
+    if (locationsData?.data) {
+      return locationsData.data.map((loc) => ({
         label: loc.name,
         value: loc.name,
       }));
@@ -61,14 +72,14 @@ const GymEdit = () => {
   useEffect(() => {
     fetchGym();
     fetchLocations();
-  }, [fetchGym, fetchLocations]); 
+  }, [fetchGym, fetchLocations]);
 
   useEffect(() => {
-    if (gymData) {
-      setName(gymData.name);
-      setDescription(gymData.description);
-      setEquipment(gymData.equipment || []); 
-      setLocation(gymData.location?.name || '');
+    if (gymData?.data) {
+      setName(gymData.data.name);
+      setDescription(gymData.data.description);
+      setEquipment(gymData.data.equipment || []);
+      setLocation(gymData.data.location?.name || '');
     }
   }, [gymData]);
 

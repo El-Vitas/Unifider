@@ -5,6 +5,7 @@ import { httpAdapter } from '../../common/adapters/httpAdapter';
 import { customToast } from '../../common/utils/customToast';
 import config from '../../config';
 import type { LocationType } from '../entities';
+import { useAuth } from '../../common/hooks/useAuth';
 
 const LocationCreate = () => {
   const [formData, setFormData] = useState<{
@@ -12,6 +13,7 @@ const LocationCreate = () => {
     description: string;
   }>({ name: '', description: '' });
   const [submitting, setSubmitting] = useState(false);
+  const authToken = useAuth().authToken;
 
   const handleFormChange = useCallback(
     (data: { name: string; description: string }) => {
@@ -32,6 +34,11 @@ const LocationCreate = () => {
       await httpAdapter.post<LocationType>(
         `${config.apiUrl}/location/create`,
         newLocation,
+        {
+          headers: {
+            'authorization': `Bearer ${authToken}`,
+          }
+        }
       );
       customToast.success('Ubicación creada correctamente');
     } catch (err: unknown) {

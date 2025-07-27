@@ -1,4 +1,4 @@
-import BtnPrimary from "./BtnPrimary";
+import BtnPrimary from "./button/BtnPrimary";
 
 type MainFormProps = {
   children: React.ReactNode;

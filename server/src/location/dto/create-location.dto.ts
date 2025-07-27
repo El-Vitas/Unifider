@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, MinLength, IsUUID } from 'class-validator';
+import { IsString, IsNotEmpty, MinLength } from 'class-validator';
 
 export class CreateLocationDto {
   @IsString()
@@ -10,9 +10,4 @@ export class CreateLocationDto {
   @IsNotEmpty()
   @MinLength(1)
   description: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @IsUUID()
-  createdBy: string;
 }

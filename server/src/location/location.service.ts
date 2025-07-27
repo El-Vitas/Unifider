@@ -87,18 +87,31 @@ export class LocationService {
     }
   }
 
-  async createLocation(createLocationDto: CreateLocationDto) {
+  async createLocation(createLocationDto: CreateLocationDto, id: string) {
     try {
-      const { name, description, createdBy } = createLocationDto;
+      const { name, description } = createLocationDto;
 
       const newLocation = await this.prisma.location.create({
-        data: { name, description, createdBy },
+        data: { name, description, createdBy: id },
       });
 
       return newLocation;
     } catch (e) {
       console.log(e);
       throw new BadGatewayException('Error creating location');
+    }
+  }
+
+  async deleteLocation(id: string) {
+    try {
+      const location = await this.findOneById(id);
+      await this.prisma.location.delete({
+        where: { id: location.id },
+      });
+      return { message: 'Location deleted successfully' };
+    } catch (e) {
+      console.log(e);
+      throw new BadGatewayException('Error deleting location');
     }
   }
 }

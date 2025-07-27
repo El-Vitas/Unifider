@@ -6,13 +6,15 @@ import { getMainMenuItems, getProfileDropdownItems } from '../utils/menuItems';
 import TitleHeader from './TitleHeader';
 import { useClickOutside } from '../../common/hooks/useClickOutside';
 import { menuType } from '../constants';
-import type { MainMenuItem } from '../types';
+import type { MainMenuItem, RoleType } from '../types';
 import NavDropdownItem from './NavDropdownItem';
+import { useAuth } from '../../common/hooks/useAuth';
 
 const Header = () => {
+  const auth = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownContainerRef = useRef<HTMLDivElement>({} as HTMLDivElement);
-  const items = getMainMenuItems('admin');
+  const items = getMainMenuItems((auth.role ?? 'user') as RoleType);
   const profileDropdownItems = getProfileDropdownItems();
 
   useClickOutside(dropdownContainerRef, () => {

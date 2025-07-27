@@ -6,26 +6,33 @@ import config from '../../config';
 import { useEffect, useMemo, useCallback } from 'react';
 import { customToast } from '../../common/utils/customToast';
 import ContainerCards from '../../common/components/ContainerCards';
-import BtnCard from '../../common/components/BtnPrimary';
+import BtnCard from '../../common/components/button/BtnPrimary';
 import { Link } from 'react-router-dom';
 import { RightOutlined } from '@ant-design/icons';
 import { capitalize } from '../../common/utils/capitalize';
+import type { CustomHttpResponse } from '../../common/types';
+import { useAuth } from '../../common/hooks/useAuth';
 const GymUser = () => {
   const url = useMemo(() => `${config.apiUrl}/gym`, []);
-  const fetchGymsFn = useCallback(() => httpAdapter.get<GymType[]>(url), [url]);
+  const authToken = useAuth().authToken;
+  const fetchGymsFn = useCallback(() => httpAdapter.get<GymType[]>(url, {
+    headers: {
+      'authorization': `Bearer ${authToken}`,
+    }
+  }), [url, authToken]);
 
   const {
     data,
     loading,
     error,
     execute: fetchGyms,
-  } = useAsync<GymType[]>(fetchGymsFn, 'Failed to fetch gyms');
+  } = useAsync<CustomHttpResponse<GymType[]>>(fetchGymsFn, 'Failed to fetch gyms');
 
   useEffect(() => {
     fetchGyms();
   }, [fetchGyms]);
 
-  const gyms = data ?? [];
+  const gyms = data?.data ?? [];
 
   useEffect(() => {
     if (error) {

@@ -8,11 +8,11 @@ import LocationCreate from '../location/pages/LocationCreate';
 const AdminRoutes = () => {
   return (
     <Routes>
-      <Route path="/create-gym" element={<GymAdmin/>} />
+      <Route path="/gym" element={<GymAdmin/>} />
       <Route path="/gym/edit/:gymName" element={<GymEdit />} />
-      
-      <Route path="location" element={<Location/>} />
-      <Route path="location/edit/:locationName" element={<LocationEdit/>} />
+
+      <Route path="/location" element={<Location/>} />
+      <Route path="/location/edit/:locationName" element={<LocationEdit/>} />
       <Route path="location/create" element={<LocationCreate />} />
       
     </Routes>

@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import Login from '../auth/pages/Login';
 import Register from '../auth/pages/Register';
 const AuthRoutes = () => {
@@ -6,6 +6,7 @@ const AuthRoutes = () => {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 };
