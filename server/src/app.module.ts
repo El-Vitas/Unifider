@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { RoleModule } from './role/role.module';
 import { LocationModule } from './location/location.module';
 import { SectionModule } from './section/section.module';
+import { EquipmentModule } from './equipment/equipment.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { SectionModule } from './section/section.module';
     RoleModule,
     LocationModule,
     SectionModule,
+    EquipmentModule,
   ],
 })
 export class AppModule {}

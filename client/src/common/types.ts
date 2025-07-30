@@ -10,7 +10,7 @@ export interface BackendErrorBody {
 }
 
 export interface HttpErrorResponse {
-  message: string; 
+  message: string;
   name: string;
   response?: {
     data?: BackendErrorBody;

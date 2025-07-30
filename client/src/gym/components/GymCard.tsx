@@ -16,7 +16,7 @@ const GymCard = ({
   buttons,
 }: GymCardProps) => {
   return (
-    <div className="grid w-full grid-cols-2 p-4 mt-4 mb-4 overflow-hidden transition-shadow shadow-lg ring-1 ring-slate-900/10 rounded-2xl hover:shadow-xl">
+    <div className="grid w-full grid-cols-2 p-4 mb-4 overflow-hidden transition-shadow shadow-lg ring-1 ring-slate-900/10 rounded-2xl hover:shadow-xl">
       <div className="flex-1 pr-6 space-y-4 text-sm">
         <h2 className="mb-2 text-xl font-semibold">{capitalize(name)}</h2>
         <p>

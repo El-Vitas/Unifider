@@ -1,4 +1,4 @@
-import BtnPrimary from "./button/BtnPrimary";
+import BtnPrimary from './button/BtnPrimary';
 
 type MainFormProps = {
   children: React.ReactNode;
@@ -19,7 +19,7 @@ const MainForm = ({
       >
         {children}
 
-        <BtnPrimary as="button" type="submit" className='self-end'>
+        <BtnPrimary as="button" type="submit" className="self-end">
           {submitButtonText}
         </BtnPrimary>
       </form>

@@ -15,18 +15,25 @@ import { useAuth } from '../../common/hooks/useAuth';
 const GymUser = () => {
   const url = useMemo(() => `${config.apiUrl}/gym`, []);
   const authToken = useAuth().authToken;
-  const fetchGymsFn = useCallback(() => httpAdapter.get<GymType[]>(url, {
-    headers: {
-      'authorization': `Bearer ${authToken}`,
-    }
-  }), [url, authToken]);
+  const fetchGymsFn = useCallback(
+    () =>
+      httpAdapter.get<GymType[]>(url, {
+        headers: {
+          authorization: `Bearer ${authToken}`,
+        },
+      }),
+    [url, authToken],
+  );
 
   const {
     data,
     loading,
     error,
     execute: fetchGyms,
-  } = useAsync<CustomHttpResponse<GymType[]>>(fetchGymsFn, 'Failed to fetch gyms');
+  } = useAsync<CustomHttpResponse<GymType[]>>(
+    fetchGymsFn,
+    'Failed to fetch gyms',
+  );
 
   useEffect(() => {
     fetchGyms();
@@ -48,18 +55,17 @@ const GymUser = () => {
     <ContainerCards>
       <>
         {gyms.map((gym) => (
-            <GymCard
-              {...gym}
-              key={gym.id}
-              buttons={
-                <div className="flex gap-2 pt-2">
-                  <BtnCard as={Link} to={`/${capitalize(gym.name)}`}>
-                    Horarios {' '}
-                    <RightOutlined />
-                  </BtnCard>
-                </div>
-              }
-            />
+          <GymCard
+            {...gym}
+            key={gym.id}
+            buttons={
+              <div className="flex gap-2 pt-2">
+                <BtnCard as={Link} to={`/${capitalize(gym.name)}`}>
+                  Horarios <RightOutlined />
+                </BtnCard>
+              </div>
+            }
+          />
         ))}
       </>
     </ContainerCards>

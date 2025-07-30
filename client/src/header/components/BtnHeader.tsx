@@ -20,6 +20,6 @@ const BtnHeader = <T extends ElementType = 'button'>({
       {children}
     </Component>
   );
-}
+};
 
 export default BtnHeader;

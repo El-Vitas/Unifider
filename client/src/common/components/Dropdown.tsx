@@ -12,7 +12,11 @@ type DropdownProps = {
   alignRight?: boolean;
 };
 
-const Dropdown = ({ dropdownItems, isAnimatingOut, alignRight }: DropdownProps) => {
+const Dropdown = ({
+  dropdownItems,
+  isAnimatingOut,
+  alignRight,
+}: DropdownProps) => {
   return (
     <div
       className={`
@@ -20,10 +24,7 @@ const Dropdown = ({ dropdownItems, isAnimatingOut, alignRight }: DropdownProps) 
         transition-opacity duration-200 ease-out
         ${isAnimatingOut ? 'opacity-0' : 'opacity-100'}
 
-        ${alignRight
-          ? 'right-0 transform-none' 
-          : 'left-1/2 -translate-x-1/2'
-        }
+        ${alignRight ? 'right-0 transform-none' : 'left-1/2 -translate-x-1/2'}
       `}
     >
       {dropdownItems.map((item) => (

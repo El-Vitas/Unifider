@@ -1,10 +1,10 @@
-import type { LocationType } from "../location/entities";
+import type { LocationType } from '../location/entities';
 
 export type GymType = {
   id: string;
   name: string;
   description: string;
-  location: LocationType
+  location: LocationType;
   equipment: string[];
   imageUrl?: string;
   scheduleByDay: Record<string, string[]>;

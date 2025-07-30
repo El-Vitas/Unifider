@@ -3,4 +3,4 @@ export const menuType = {
   Link: 'Link',
 } as const;
 
-export type MenuTypeEnum = typeof menuType[keyof typeof menuType];
+export type MenuTypeEnum = (typeof menuType)[keyof typeof menuType];

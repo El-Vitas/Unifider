@@ -12,7 +12,7 @@ export function useAsync<T>(asyncFn: () => Promise<T>, errorMessage?: string) {
     error: null,
     data: null,
   });
-  
+
   const execute = useCallback(async () => {
     setState({ loading: true, error: null, data: null });
     try {

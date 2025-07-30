@@ -25,13 +25,18 @@ const Header = () => {
     <div className="flex flex-row items-center justify-between p-4 text-center bg-primary">
       <TitleHeader />
       <div className="flex flex-1 justify-evenly">
-        {items.map((item: MainMenuItem) => (
+        {items.map((item: MainMenuItem) =>
           item.type === menuType.Dropdown ? (
-            <NavDropdownItem to={item.route} name={item.name} dropdownItems={item.dropdownItems} key={item.name}/>
+            <NavDropdownItem
+              to={item.route}
+              name={item.name}
+              dropdownItems={item.dropdownItems}
+              key={item.name}
+            />
           ) : (
-            <NavLinkItem key={item.name} to={item.route} name={item.name}/>
-          )
-        ))}
+            <NavLinkItem key={item.name} to={item.route} name={item.name} />
+          ),
+        )}
       </div>
 
       <div className="relative ml-8" ref={dropdownContainerRef}>
@@ -43,7 +48,9 @@ const Header = () => {
           <FiChevronDown className="text-white" />
         </button>
 
-        {isDropdownOpen && <Dropdown dropdownItems={profileDropdownItems} alignRight={true} />}
+        {isDropdownOpen && (
+          <Dropdown dropdownItems={profileDropdownItems} alignRight={true} />
+        )}
       </div>
     </div>
   );

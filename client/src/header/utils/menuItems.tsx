@@ -9,7 +9,7 @@ export const getMainMenuItems = (role: RoleType): MainMenuItem[] => {
     return getAdminMenuItems();
   }
   return getUserMenuItems();
-}
+};
 
 const getUserMenuItems = (): MainMenuItem[] => {
   const routes = {
@@ -45,7 +45,7 @@ const getAdminMenuItems = (): MainMenuItem[] => {
     teams: '/team',
     gyms: '/gym',
     courts: '/court',
-    equipment: '/equipment',
+    equipment: '/gym/equipment',
   };
 
   return [
@@ -63,8 +63,8 @@ const getAdminMenuItems = (): MainMenuItem[] => {
       type: menuType.Dropdown,
       dropdownItems: [
         {
-          to: '/equipment',
-          name: 'Equipamiento',  
+          to: routes.equipment,
+          name: 'Equipamiento',
         },
       ],
     },
@@ -75,9 +75,9 @@ const getAdminMenuItems = (): MainMenuItem[] => {
     {
       name: 'Ubicaciones',
       route: '/location',
-    }
+    },
   ];
-}
+};
 
 export const getProfileDropdownItems = (): ProfileDropdownItem[] => {
   const routes = {

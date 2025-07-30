@@ -1,70 +1,28 @@
-import { useState } from 'react';
 import type { LocationType } from '../entities';
-import BtnPrimary from '../../common/components/button/BtnPrimary';
-import { Link } from 'react-router-dom';
-import BtnDelete from '../../common/components/button/BtnDelete';
-import { useAuth } from '../../common/hooks/useAuth';
-import config from '../../config';
-import { useCallback } from 'react';
-import { customToast } from '../../common/utils/customToast';
-import { httpAdapter } from '../../common/adapters/httpAdapter';
 
-const LocationCard = ({ id, name, description }: LocationType) => {
-  const authToken = useAuth().authToken;
-  const [isDeleted, setIsDeleted] = useState(false);
+type LocationCardProps = LocationType & {
+  buttons?: React.ReactNode;
+};
 
-  const deleteLocationFn = useCallback(
-    () =>
-      httpAdapter.delete(`${config.apiUrl}/location/delete/${id}`, {
-        headers: {
-          authorization: `Bearer ${authToken}`,
-        },
-      }),
-    [authToken, id],
-  );
-
-  const onDelete = async () => {
-    try {
-      setIsDeleted(true);
-      
-      await deleteLocationFn();
-      customToast.success('Ubicación eliminada correctamente');
-    } catch (err: unknown) {
-      setIsDeleted(false);
-      
-      if (err instanceof Error) {
-        customToast.error(
-          `Error al eliminar la ubicación: ${err?.message ?? 'Error desconocido'}`,
-        );
-      } else {
-        customToast.error('Error al eliminar la ubicación: Error desconocido');
-      }
-    }
-  };
-
-  if (isDeleted) {
-    return null;
-  }
-
+const LocationCard = ({ name, description, buttons }: LocationCardProps) => {
   return (
-    <div className="mb-4 transition-shadow duration-150 shadow-lg w-60 ring-1 ring-slate-700/30 rounded-2xl bg-slate-50 hover:shadow-xl">
-      <div className="px-4 py-4 text-center">
-        <span className="font-semibold text-gray-800">Nombre:</span>
-        <p className="text-gray-600">{name}</p>
-        <span className="font-semibold text-gray-800">Descripción:</span>
-        <p className="text-gray-600">{description}</p>
+    <div className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-gray-300 w-72 mb-6">
+      <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 border-b border-gray-200">
+        <h3 className="text-xl font-bold text-gray-700 text-center">{name}</h3>
       </div>
-      <div className="flex justify-center gap-3 mb-2">
-        <BtnPrimary as={Link} to={`/location/edit/${name}`}>
-          Editar
-        </BtnPrimary>
-        <BtnDelete
-          onDelete={onDelete}
-          confirmTitle="Confirmar eliminación"
-          confirmMessage="¿Estás seguro de que quieres eliminar esta ubicación?"
-        >
-          Eliminar
-        </BtnDelete>
+
+      <div className="p-6">
+        <div className="mb-4">
+          <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
+            {description}
+          </p>
+        </div>
+
+        {buttons && (
+          <div className="flex gap-2 pt-4 border-t border-gray-100 justify-center">
+            {buttons}
+          </div>
+        )}
       </div>
     </div>
   );

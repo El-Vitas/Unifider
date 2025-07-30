@@ -8,7 +8,7 @@ type BtnDeleteProps = {
   className?: string;
   confirmTitle?: string;
   confirmMessage?: string;
-}
+};
 
 const BtnDelete = ({
   onDelete,

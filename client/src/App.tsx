@@ -19,7 +19,7 @@ function App() {
         autoClose={3000}
         hideProgressBar={true}
       />
-      
+
       {!isAuthenticated ? (
         <AuthRoutes />
       ) : (

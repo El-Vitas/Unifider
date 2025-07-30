@@ -1,6 +1,8 @@
 import type { HttpErrorResponse } from '../types';
 
-export function isHttpErrorResponse(error: unknown): error is HttpErrorResponse {
+export function isHttpErrorResponse(
+  error: unknown,
+): error is HttpErrorResponse {
   if (typeof error !== 'object' || error === null) {
     return false;
   }
@@ -14,7 +16,10 @@ export function isHttpErrorResponse(error: unknown): error is HttpErrorResponse 
   if (typeof potentialResponse !== 'object' || potentialResponse === null) {
     return false;
   }
-  if (!('status' in potentialResponse) || typeof (potentialResponse as { status: unknown }).status !== 'number') {
+  if (
+    !('status' in potentialResponse) ||
+    typeof (potentialResponse as { status: unknown }).status !== 'number'
+  ) {
     return false;
   }
   return true;

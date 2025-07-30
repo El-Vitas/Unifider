@@ -13,8 +13,7 @@ export const getWeekDaysName = (): string[] => {
     weekdays.push(dayFullName);
   }
   return weekdays;
-}
-
+};
 
 export const getMonthName = (date: Date): string => {
   const options: Intl.DateTimeFormatOptions = { month: 'long' };

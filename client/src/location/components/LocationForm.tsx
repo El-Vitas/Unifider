@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import InputField from '../../common/components/form/InputField';
-import type { LocationType } from '../entities'; 
+import type { LocationType } from '../entities';
 
 interface LocationFormProps {
   initialData?: LocationType | null;
@@ -14,7 +14,9 @@ const LocationForm: React.FC<LocationFormProps> = ({
   onFormChange,
 }) => {
   const [name, setName] = useState<string>(initialData?.name || '');
-  const [description, setDescription] = useState<string>(initialData?.description || '');
+  const [description, setDescription] = useState<string>(
+    initialData?.description || '',
+  );
 
   useEffect(() => {
     setName(initialData?.name || '');

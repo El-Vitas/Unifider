@@ -20,7 +20,7 @@ const SelectField = ({
   props = {},
   isLoading = false,
 }: SelectFieldProps) => {
-    if (isLoading) {
+  if (isLoading) {
     return (
       <div className="mb-4 mt-6 animate-pulse">
         <div className="h-4 bg-gray-300 rounded w-1/4 mb-1"></div>

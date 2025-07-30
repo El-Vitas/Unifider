@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import MainForm from '../../common/components/MainForm'; 
+import MainForm from '../../common/components/MainForm';
 import LocationForm from '../components/LocationForm';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAsync } from '../../common/hooks/useAsync';
 import config from '../../config';
 import { customToast } from '../../common/utils/customToast';
@@ -17,7 +17,9 @@ const LocationEdit = () => {
     name: '',
     description: '',
   });
-  const [submitting, setSubmitting] = useState(false); 
+  const [submitting, setSubmitting] = useState(false);
+  const navigate = useNavigate();
+  const redirectUrl = '/location/';
   const urlLocation = useMemo(
     () => `${config.apiUrl}/location/${locationName}`,
     [locationName],
@@ -25,11 +27,12 @@ const LocationEdit = () => {
   const authToken = useAuth().authToken;
 
   const fetchLocationFn = useCallback(
-    () => httpAdapter.get<LocationType>(urlLocation, {
-      headers: {
-        'authorization': `Bearer ${authToken}`,
-      }
-    }),
+    () =>
+      httpAdapter.get<LocationType>(urlLocation, {
+        headers: {
+          authorization: `Bearer ${authToken}`,
+        },
+      }),
     [urlLocation, authToken],
   );
 
@@ -37,8 +40,8 @@ const LocationEdit = () => {
     (data: LocationType) =>
       httpAdapter.put<LocationType>(`${config.apiUrl}/location/update`, data, {
         headers: {
-          'authorization': `Bearer ${authToken}`,
-        }
+          authorization: `Bearer ${authToken}`,
+        },
       }),
     [authToken],
   );
@@ -48,7 +51,10 @@ const LocationEdit = () => {
     loading: fetchLoading,
     error: fetchError,
     execute: fetchLocation,
-  } = useAsync<CustomHttpResponse<LocationType>>(fetchLocationFn, 'Failed to fetch Location');
+  } = useAsync<CustomHttpResponse<LocationType>>(
+    fetchLocationFn,
+    'Failed to fetch Location',
+  );
 
   useEffect(() => {
     fetchLocation();
@@ -56,7 +62,7 @@ const LocationEdit = () => {
 
   useEffect(() => {
     if (initialLocationData?.data) {
-      setFormData(initialLocationData.data); 
+      setFormData(initialLocationData.data);
     }
   }, [initialLocationData]);
 
@@ -86,6 +92,7 @@ const LocationEdit = () => {
     try {
       await updateLocationFn(updatedLocation);
       customToast.success('Ubicación actualizada correctamente');
+      navigate(redirectUrl);
     } catch (err: unknown) {
       if (err instanceof Error) {
         customToast.error(
@@ -103,20 +110,8 @@ const LocationEdit = () => {
 
   const isLoading = fetchLoading || submitting;
 
-  if (fetchError) {
-    return (
-      <div className="mt-6 text-center text-red-600">
-        Ocurrió un error al cargar los datos. Por favor, inténtelo de nuevo.
-      </div>
-    );
-  }
-
-  if (!fetchLoading && !initialLocationData) {
-    return (
-      <div className="mt-6 text-center">
-        No se encontraron datos para la ubicación.
-      </div>
-    );
+  if ((!fetchLoading && !initialLocationData) || fetchError) {
+    navigate(redirectUrl);
   }
 
   return (

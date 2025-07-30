@@ -6,6 +6,7 @@ import { customToast } from '../../common/utils/customToast';
 import config from '../../config';
 import type { LocationType } from '../entities';
 import { useAuth } from '../../common/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 const LocationCreate = () => {
   const [formData, setFormData] = useState<{
@@ -13,6 +14,8 @@ const LocationCreate = () => {
     description: string;
   }>({ name: '', description: '' });
   const [submitting, setSubmitting] = useState(false);
+  const navigate = useNavigate();
+  const redirectUrl = '/location/';
   const authToken = useAuth().authToken;
 
   const handleFormChange = useCallback(
@@ -36,11 +39,12 @@ const LocationCreate = () => {
         newLocation,
         {
           headers: {
-            'authorization': `Bearer ${authToken}`,
-          }
-        }
+            authorization: `Bearer ${authToken}`,
+          },
+        },
       );
       customToast.success('Ubicación creada correctamente');
+      navigate(redirectUrl);
     } catch (err: unknown) {
       if (err instanceof Error) {
         customToast.error(`Error al crear la ubicación: ${err.message}`);

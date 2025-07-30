@@ -1,5 +1,5 @@
-import type { MenuTypeEnum } from "./constants";
-import { menuType } from "./constants";
+import type { MenuTypeEnum } from './constants';
+import { menuType } from './constants';
 
 export type BaseMainMenuItem = {
   name: string;

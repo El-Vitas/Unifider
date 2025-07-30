@@ -28,18 +28,22 @@ const GymEdit = () => {
   const urlLocation = useMemo(() => `${config.apiUrl}/location`, []);
 
   const fetchGymFn = useCallback(
-    () => httpAdapter.get<GymType>(urlGym, {
-      headers: {
-        'authorization': `Bearer ${authToken}`,
-      }
-    }), [urlGym, authToken],
+    () =>
+      httpAdapter.get<GymType>(urlGym, {
+        headers: {
+          authorization: `Bearer ${authToken}`,
+        },
+      }),
+    [urlGym, authToken],
   );
   const fetchLocationsFn = useCallback(
-    () => httpAdapter.get<LocationType[]>(urlLocation, {
-      headers: {
-        'authorization': `Bearer ${authToken}`,
-      }
-    }), [urlLocation, authToken],
+    () =>
+      httpAdapter.get<LocationType[]>(urlLocation, {
+        headers: {
+          authorization: `Bearer ${authToken}`,
+        },
+      }),
+    [urlLocation, authToken],
   );
 
   const {

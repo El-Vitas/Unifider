@@ -1,15 +1,15 @@
 // NavDropdownItem.tsx
-import { FiChevronDown } from "react-icons/fi";
-import Dropdown from "../../common/components/Dropdown";
-import { useRef, useState, useEffect } from "react"; // Importa useEffect
-import BtnHeader from "./BtnHeader";
-import { Link } from "react-router-dom";
-import type{ BaseDropdownItem } from "../types";
+import { FiChevronDown } from 'react-icons/fi';
+import Dropdown from '../../common/components/Dropdown';
+import { useRef, useState, useEffect } from 'react'; // Importa useEffect
+import BtnHeader from './BtnHeader';
+import { Link } from 'react-router-dom';
+import type { BaseDropdownItem } from '../types';
 
 type Props = {
   to: string;
   name: string;
-  dropdownItems: BaseDropdownItem[]; 
+  dropdownItems: BaseDropdownItem[];
 };
 
 const NavDropdownItem = ({ to, name, dropdownItems }: Props) => {
@@ -57,7 +57,7 @@ const NavDropdownItem = ({ to, name, dropdownItems }: Props) => {
         <span>{name}</span>
         <FiChevronDown className="text-white" />
       </BtnHeader>
-      
+
       {(isDropdownOpen || isDropdownAnimatingOut) && (
         <Dropdown
           dropdownItems={dropdownItems}
