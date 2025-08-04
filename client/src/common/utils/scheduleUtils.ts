@@ -98,7 +98,9 @@ export const convertTimeBlocksToScheduleFormat = (
     if (!dayKey) return;
 
     const blockIndex = scheduleBlocks.findIndex((block) => {
-      return block.start === timeBlock.startTime && block.end === timeBlock.endTime;
+      return (
+        block.start === timeBlock.startTime && block.end === timeBlock.endTime
+      );
     });
 
     if (blockIndex !== -1) {
