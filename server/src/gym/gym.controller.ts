@@ -1,10 +1,29 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
+  Patch,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { GymService } from './gym.service';
-import { Param } from '@nestjs/common';
+import { CreateGymDto } from './dto/create-gym.dto';
 import { isUUID } from 'class-validator';
 import { Permissions } from 'src/common/decorators/permissions.decorator';
 import { permissionFactory } from 'src/common/permissions/permissionFactory';
 import { Resource } from 'src/common/permissions/permission.enum';
+import { UserInterceptor } from 'src/common/interceptors/user.interceptor';
+import { User } from 'src/common/decorators/user.decorator';
+import { User as UserEntity } from 'src/user/entities/user.entity';
+import { ImageUploadInterceptor } from 'src/common/interceptors/file-upload.interceptor';
+import { Express } from 'express';
+import { UpdateGymDto } from './dto/update-gym.dto';
+
 @Controller('gym')
 export class GymController {
   constructor(private readonly gymService: GymService) {}
@@ -16,12 +35,111 @@ export class GymController {
   }
 
   @Get(':value')
-  @Permissions(permissionFactory.canRead(Resource.GYM))
+  @Permissions(
+    permissionFactory.canRead(Resource.GYM),
+    permissionFactory.canRead(Resource.SCHEDULE),
+    permissionFactory.canRead(Resource.BOOKING),
+    permissionFactory.canRead(Resource.EQUIPMENT),
+    permissionFactory.canRead(Resource.LOCATION),
+  )
   async findOne(@Param('value') value: string) {
     if (isUUID(value)) {
       return await this.gymService.findOneById(value);
     } else {
       return await this.gymService.findOneByName(value);
     }
+  }
+
+  @Post('create')
+  @Permissions(
+    permissionFactory.canCreate(Resource.GYM),
+    permissionFactory.canCreate(Resource.SCHEDULE),
+  )
+  @UseInterceptors(UserInterceptor)
+  async create(@Body() createGymDto: CreateGymDto, @User() user: UserEntity) {
+    return this.gymService.create(createGymDto, user.id);
+  }
+
+  @Post(':gymId/image')
+  @Permissions(permissionFactory.canUpdate(Resource.GYM))
+  @UseInterceptors(ImageUploadInterceptor('gym-images'))
+  async updateImage(
+    @Param('gymId') gymId: string,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    if (!image) {
+      throw new BadRequestException('Image file is required');
+    }
+
+    const imageUrl = `/uploads/gym-images/${image.filename}`;
+    return await this.gymService.updateImage(gymId, imageUrl);
+  }
+
+  @Patch(':id/edit')
+  @Permissions(
+    permissionFactory.canCreate(Resource.GYM),
+    permissionFactory.canCreate(Resource.SCHEDULE),
+  )
+  async editGym(@Param('id') id: string, @Body() updateGymDto: UpdateGymDto) {
+    if (!isUUID(id)) {
+      throw new BadRequestException('Invalid gym ID');
+    }
+    return await this.gymService.update(id, updateGymDto);
+  }
+
+  @Get(':id/bookings')
+  @Permissions(
+    permissionFactory.canRead(Resource.GYM),
+    permissionFactory.canRead(Resource.SCHEDULE),
+    permissionFactory.canRead(Resource.BOOKING),
+  )
+  async getGymBookings(
+    @Param('id') id: string,
+    @Query('dayOfWeek') dayOfWeek?: string,
+    @Query('timeBlockId') timeBlockId?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ) {
+    if (!isUUID(id)) {
+      throw new BadRequestException('Invalid gym ID');
+    }
+
+    const filters = {
+      ...(dayOfWeek && { dayOfWeek: parseInt(dayOfWeek) }),
+      ...(timeBlockId && { timeBlockId }),
+      ...(startDate && { startDate: new Date(startDate) }),
+      ...(endDate && { endDate: new Date(endDate) }),
+    };
+
+    return await this.gymService.getGymBookings(id, filters);
+  }
+
+  @Delete(':id/bookings/:bookingId')
+  @Permissions(permissionFactory.canDelete(Resource.BOOKING))
+  async cancelUserBooking(
+    @Param('id') gymId: string,
+    @Param('bookingId') bookingId: string,
+  ) {
+    if (!isUUID(gymId) || !isUUID(bookingId)) {
+      throw new BadRequestException('Invalid ID format');
+    }
+    return await this.gymService.cancelUserBooking(gymId, bookingId);
+  }
+
+  @Delete(':id/bookings/reset')
+  @Permissions(permissionFactory.canDelete(Resource.BOOKING))
+  async resetGymBookings(
+    @Param('id') gymId: string,
+    @Body()
+    options?: {
+      dayOfWeek?: number;
+      timeBlockId?: string;
+      reason?: string;
+    },
+  ) {
+    if (!isUUID(gymId)) {
+      throw new BadRequestException('Invalid gym ID');
+    }
+    return await this.gymService.resetGymBookings(gymId, options);
   }
 }

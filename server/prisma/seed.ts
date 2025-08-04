@@ -13,6 +13,7 @@ const weekDayToNumber: { [key: string]: number } = {
   domingo: 7,
 };
 
+// Helper function for section time slots that still use Date
 function parseTimeToDate(timeStr: string): Date {
   const [hours, minutes] = timeStr.split(':').map(Number);
   const date = new Date(0);
@@ -129,6 +130,12 @@ async function main() {
 
   // ===== GYMS =====
   console.log('Creating gyms...');
+
+  // First create schedules
+  const gymSchedule = await prisma.schedule.create({
+    data: {},
+  });
+
   const mainGymFacility = await prisma.gym.upsert({
     where: { name: 'gimnasio' },
     update: {
@@ -136,6 +143,7 @@ async function main() {
         'Instalación principal de entrenamiento con equipos de musculación',
       locationId: mainGym.id,
       createdBy: adminUser.id,
+      scheduleId: gymSchedule.id,
     },
     create: {
       name: 'gimnasio',
@@ -143,11 +151,38 @@ async function main() {
         'Instalación principal de entrenamiento con equipos de musculación',
       locationId: mainGym.id,
       createdBy: adminUser.id,
+      scheduleId: gymSchedule.id,
     },
   });
 
   // ===== COURTS =====
   console.log('Creating courts...');
+
+  // Create schedules for courts
+  const court1Schedule = await prisma.schedule.create({
+    data: {},
+  });
+
+  const court2Schedule = await prisma.schedule.create({
+    data: {},
+  });
+
+  const tennisSchedule = await prisma.schedule.create({
+    data: {},
+  });
+
+  const volleyballCourtSchedule = await prisma.schedule.create({
+    data: {},
+  });
+
+  const sandCourtSchedule = await prisma.schedule.create({
+    data: {},
+  });
+
+  const basketballCourtSchedule = await prisma.schedule.create({
+    data: {},
+  });
+
   const court1 = await prisma.court.upsert({
     // Used later for SectionTimeSlot locationId and court1Schedule
     where: { name: 'pasto sintetico 1' },
@@ -155,44 +190,52 @@ async function main() {
       description: 'Cancha de fútbol con pasto sintético',
       locationId: outdoorArea.id,
       createdBy: adminUser.id,
+      scheduleId: court1Schedule.id,
     },
     create: {
       name: 'pasto sintetico 1',
       description: 'Cancha de fútbol con pasto sintético',
       locationId: outdoorArea.id,
       createdBy: adminUser.id,
+      scheduleId: court1Schedule.id,
     },
   });
 
-  const court2 = await prisma.court.upsert({
+  // No assignment needed if variable not used
+  await prisma.court.upsert({
     // Used later for court2Schedule
     where: { name: 'pasto sintetico 2' },
     update: {
       description: 'Segunda cancha de fútbol con pasto sintético',
       locationId: outdoorArea.id,
       createdBy: adminUser.id,
+      scheduleId: court2Schedule.id,
     },
     create: {
       name: 'pasto sintetico 2',
       description: 'Segunda cancha de fútbol con pasto sintético',
       locationId: outdoorArea.id,
       createdBy: adminUser.id,
+      scheduleId: court2Schedule.id,
     },
   });
 
-  const tennisCourt = await prisma.court.upsert({
+  // No assignment needed if variable not used
+  await prisma.court.upsert({
     // Used later for tennisSchedule
     where: { name: 'cancha de tenis' },
     update: {
       description: 'Cancha de tenis profesional',
       locationId: outdoorArea.id,
       createdBy: adminUser.id,
+      scheduleId: tennisSchedule.id,
     },
     create: {
       name: 'cancha de tenis',
       description: 'Cancha de tenis profesional',
       locationId: outdoorArea.id,
       createdBy: adminUser.id,
+      scheduleId: tennisSchedule.id,
     },
   });
 
@@ -203,12 +246,14 @@ async function main() {
       description: 'Cancha de voleibol interior',
       locationId: mainGym.id,
       createdBy: adminUser.id,
+      scheduleId: volleyballCourtSchedule.id,
     },
     create: {
       name: 'cancha de voleibol',
       description: 'Cancha de voleibol interior',
       locationId: mainGym.id,
       createdBy: adminUser.id,
+      scheduleId: volleyballCourtSchedule.id,
     },
   });
 
@@ -219,12 +264,14 @@ async function main() {
       description: 'Cancha de voleibol de arena',
       locationId: sandCourtLocation.id,
       createdBy: adminUser.id,
+      scheduleId: sandCourtSchedule.id,
     },
     create: {
       name: 'cancha de arena',
       description: 'Cancha de voleibol de arena',
       locationId: sandCourtLocation.id,
       createdBy: adminUser.id,
+      scheduleId: sandCourtSchedule.id,
     },
   });
 
@@ -235,12 +282,14 @@ async function main() {
       description: 'Cancha de basketball interior',
       locationId: mainGym.id,
       createdBy: adminUser.id,
+      scheduleId: basketballCourtSchedule.id,
     },
     create: {
       name: 'cancha de basketball',
       description: 'Cancha de basketball interior',
       locationId: mainGym.id,
       createdBy: adminUser.id,
+      scheduleId: basketballCourtSchedule.id,
     },
   });
 
@@ -360,118 +409,129 @@ async function main() {
     },
   });
 
-  // ===== SCHEDULES =====
-  console.log('Creating schedules...');
+  // ===== SCHEDULE TIME BLOCKS =====
+  console.log('Creating schedule time blocks...');
 
-  const gymSchedule = await prisma.schedule.create({
-    data: {
-      name: 'Horario Regular Gimnasio',
-      createdBy: adminUser.id,
-      gymId: mainGymFacility.id,
-    },
-  });
+  // Gym schedule - valid domain time blocks
+  const gymTimeBlocks = [
+    { start: '08:15', end: '08:50' },
+    { start: '08:50', end: '09:25' },
+    { start: '09:35', end: '10:10' },
+    { start: '10:10', end: '10:45' },
+    { start: '10:55', end: '11:30' },
+    { start: '11:30', end: '12:05' },
+    { start: '12:15', end: '12:50' },
+    { start: '12:50', end: '13:25' },
+    { start: '14:30', end: '15:05' },
+    { start: '15:05', end: '15:40' },
+    { start: '15:50', end: '16:25' },
+    { start: '16:25', end: '17:00' },
+    { start: '17:10', end: '17:45' },
+    { start: '17:45', end: '18:20' },
+    { start: '18:30', end: '19:05' },
+    { start: '19:05', end: '19:40' },
+    { start: '19:50', end: '20:25' },
+    { start: '20:25', end: '21:00' },
+    { start: '21:10', end: '21:45' },
+    { start: '21:45', end: '22:20' },
+  ];
 
-  const court1Schedule = await prisma.schedule.create({
-    data: {
-      name: 'Horario Cancha Pasto 1',
-      createdBy: adminUser.id,
-      courtId: court1.id,
-    },
-  });
-
-  const court2Schedule = await prisma.schedule.create({
-    data: {
-      name: 'Horario Cancha Pasto 2',
-      createdBy: adminUser.id,
-      courtId: court2.id,
-    },
-  });
-
-  const tennisSchedule = await prisma.schedule.create({
-    data: {
-      name: 'Horario Cancha Tenis',
-      createdBy: adminUser.id,
-      courtId: tennisCourt.id,
-    },
-  });
-
-  // ===== SCHEDULED TIME BLOCKS =====
-  console.log('Creating scheduled time blocks...');
-
+  // Create gym schedule blocks for weekdays (1-5)
   for (let day = 1; day <= 5; day++) {
-    await prisma.scheduledTimeBlock.create({
-      data: {
-        scheduleId: gymSchedule.id,
-        dayOfWeek: day,
-        startTime: parseTimeToDate('10:00'),
-        endTime: parseTimeToDate('20:00'),
-        capacity: 50,
-      },
-    });
+    for (const timeBlock of gymTimeBlocks) {
+      await prisma.scheduleTimeBlock.create({
+        data: {
+          scheduleId: gymSchedule.id,
+          dayOfWeek: day,
+          startTime: timeBlock.start,
+          endTime: timeBlock.end,
+          capacity: 30,
+          isEnabled: true,
+        },
+      });
+    }
   }
+
+  // Create gym schedule blocks for weekends (6-7) - reduced hours
+  const weekendTimeBlocks = gymTimeBlocks.filter(
+    (block) => block.start >= '08:15' && block.end <= '18:20',
+  );
 
   for (let day = 6; day <= 7; day++) {
-    await prisma.scheduledTimeBlock.create({
-      data: {
-        scheduleId: gymSchedule.id,
-        dayOfWeek: day,
-        startTime: parseTimeToDate('10:00'),
-        endTime: parseTimeToDate('18:00'),
-        capacity: 50,
-      },
-    });
+    for (const timeBlock of weekendTimeBlocks) {
+      await prisma.scheduleTimeBlock.create({
+        data: {
+          scheduleId: gymSchedule.id,
+          dayOfWeek: day,
+          startTime: timeBlock.start,
+          endTime: timeBlock.end,
+          capacity: 20,
+          isEnabled: true,
+        },
+      });
+    }
   }
 
+  // Create court schedule blocks
+  const courtTimeBlocks = [
+    { start: '08:15', end: '09:25' },
+    { start: '09:35', end: '10:45' },
+    { start: '10:55', end: '12:05' },
+    { start: '12:15', end: '13:25' },
+    { start: '14:30', end: '15:40' },
+    { start: '15:50', end: '17:00' },
+    { start: '17:10', end: '18:20' },
+    { start: '18:30', end: '19:40' },
+    { start: '19:50', end: '21:00' },
+    { start: '21:10', end: '22:20' },
+  ];
+
   for (let day = 1; day <= 7; day++) {
-    await prisma.scheduledTimeBlock.create({
-      data: {
-        scheduleId: court1Schedule.id,
-        dayOfWeek: day,
-        startTime: parseTimeToDate('10:00'),
-        endTime: parseTimeToDate('15:00'),
-        capacity: 1,
-      },
-    });
+    // Court 1 schedule
+    for (const timeBlock of courtTimeBlocks) {
+      await prisma.scheduleTimeBlock.create({
+        data: {
+          scheduleId: court1Schedule.id,
+          dayOfWeek: day,
+          startTime: timeBlock.start,
+          endTime: timeBlock.end,
+          capacity: 1,
+          isEnabled: true,
+        },
+      });
+    }
 
-    await prisma.scheduledTimeBlock.create({
-      data: {
-        scheduleId: court1Schedule.id,
-        dayOfWeek: day,
-        startTime: parseTimeToDate('15:00'),
-        endTime: parseTimeToDate('22:00'),
-        capacity: 1,
-      },
-    });
+    // Court 2 schedule
+    for (const timeBlock of courtTimeBlocks) {
+      await prisma.scheduleTimeBlock.create({
+        data: {
+          scheduleId: court2Schedule.id,
+          dayOfWeek: day,
+          startTime: timeBlock.start,
+          endTime: timeBlock.end,
+          capacity: 1,
+          isEnabled: true,
+        },
+      });
+    }
 
-    await prisma.scheduledTimeBlock.create({
-      data: {
-        scheduleId: court2Schedule.id,
-        dayOfWeek: day,
-        startTime: parseTimeToDate('10:00'),
-        endTime: parseTimeToDate('22:00'),
-        capacity: 1,
-      },
-    });
+    // Tennis schedule
+    const tennisTimeBlocks = courtTimeBlocks.filter(
+      (block) => block.start >= '08:15' && block.end <= '18:20',
+    );
 
-    await prisma.scheduledTimeBlock.create({
-      data: {
-        scheduleId: tennisSchedule.id,
-        dayOfWeek: day,
-        startTime: parseTimeToDate('10:00'),
-        endTime: parseTimeToDate('13:00'),
-        capacity: 1,
-      },
-    });
-
-    await prisma.scheduledTimeBlock.create({
-      data: {
-        scheduleId: tennisSchedule.id,
-        dayOfWeek: day,
-        startTime: parseTimeToDate('15:00'),
-        endTime: parseTimeToDate('22:00'),
-        capacity: 1,
-      },
-    });
+    for (const timeBlock of tennisTimeBlocks) {
+      await prisma.scheduleTimeBlock.create({
+        data: {
+          scheduleId: tennisSchedule.id,
+          dayOfWeek: day,
+          startTime: timeBlock.start,
+          endTime: timeBlock.end,
+          capacity: 1,
+          isEnabled: true,
+        },
+      });
+    }
   }
 
   // ===== WORKSHOPS =====
@@ -793,7 +853,7 @@ async function main() {
     }
 
     // Create gym bookings (ScheduledBooking - check FK name)
-    const gymTimeBlock = await prisma.scheduledTimeBlock.findFirst({
+    const gymTimeBlock = await prisma.scheduleTimeBlock.findFirst({
       where: {
         scheduleId: gymSchedule.id,
         dayOfWeek: weekDayToNumber['miercoles'],
@@ -812,7 +872,7 @@ async function main() {
 
       await prisma.scheduledBooking.create({
         data: {
-          scheduledTimeBlockId: gymTimeBlock.id, // Assumed FK name
+          scheduleTimeBlockId: gymTimeBlock.id, // Corrected FK name
           userId: normalUser.id,
           bookingDate: nextWednesday,
         },

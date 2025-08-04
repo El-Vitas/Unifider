@@ -4,7 +4,7 @@ import { Resource } from './permission.enum';
 
 export const UserPermissions: RolePermissions = {
   [Action.CREATE]: [],
-  [Action.READ]: [Resource.GYM, Resource.LOCATION],
+  [Action.READ]: [Resource.GYM, Resource.LOCATION, Resource.SCHEDULE],
   [Action.UPDATE]: [],
   [Action.DELETE]: [],
 };

@@ -8,7 +8,7 @@ import { customToast } from '../../common/utils/customToast';
 import ContainerCards from '../../common/components/ContainerCards';
 import BtnCard from '../../common/components/button/BtnPrimary';
 import { Link } from 'react-router-dom';
-import { RightOutlined } from '@ant-design/icons';
+import { RightOutlined, UserOutlined } from '@ant-design/icons';
 import type { CustomHttpResponse } from '../../common/types';
 import { useAuth } from '../../common/hooks/useAuth';
 import BtnPrimary from '../../common/components/button/BtnPrimary';
@@ -73,20 +73,34 @@ const GymAdmin = () => {
               key={gym.id}
               buttons={
                 <>
-                  <BtnCard as={Link} to={`/gym/edit/${gym.name.toLowerCase()}`}>
+                  <BtnCard
+                    as={Link}
+                    to={`/gym/edit/${gym.name.toLowerCase()}`}
+                    className="text-xs py-1.5 px-2"
+                  >
                     Editar <RightOutlined />
                   </BtnCard>
 
                   <BtnCard
                     as={Link}
                     to={`/gym/equipment/${gym.name.toLowerCase()}`}
+                    className="text-xs py-1.5 px-2"
                   >
                     Ver equipamiento <RightOutlined />
                   </BtnCard>
 
                   <BtnCard
                     as={Link}
+                    to={`/gym/bookings/${gym.id}`}
+                    className="text-xs py-1.5 px-2"
+                  >
+                    <UserOutlined /> Gestionar reservas
+                  </BtnCard>
+
+                  <BtnCard
+                    as={Link}
                     to={`/gym/delete/${gym.name.toLowerCase()}`}
+                    className="!text-xs !py-1.5 !px-2"
                   >
                     Eliminar <RightOutlined />
                   </BtnCard>

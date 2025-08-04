@@ -7,12 +7,16 @@ import LocationCreate from '../location/pages/LocationCreate';
 import EquipmentAdmin from '../equipment/pages/EquipmentAdmin';
 import EquipmentCreate from '../equipment/pages/EquipmentCreate';
 import EquipmentEdit from '../equipment/pages/EquipmentEdit';
+import GymCreate from '../gym/pages/GymCreate';
+import GymBookings from '../gym/pages/GymBookings';
 
 const AdminRoutes = () => {
   return (
     <Routes>
       <Route path="/gym" element={<GymAdmin />} />
       <Route path="/gym/edit/:gymName" element={<GymEdit />} />
+      <Route path="/gym/create" element={<GymCreate />} />
+      <Route path="/gym/bookings/:gymId" element={<GymBookings />} />
       <Route path="/gym/equipment" element={<EquipmentAdmin />} />
       <Route path="/gym/equipment/create" element={<EquipmentCreate />} />
       <Route

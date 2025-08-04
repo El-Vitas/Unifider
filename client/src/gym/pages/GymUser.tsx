@@ -59,8 +59,12 @@ const GymUser = () => {
             {...gym}
             key={gym.id}
             buttons={
-              <div className="flex gap-2 pt-2">
-                <BtnCard as={Link} to={`/${capitalize(gym.name)}`}>
+              <div className="flex gap-1.5">
+                <BtnCard
+                  as={Link}
+                  to={`/${capitalize(gym.name)}`}
+                  className="!text-xs !py-1.5 !px-3"
+                >
                   Horarios <RightOutlined />
                 </BtnCard>
               </div>

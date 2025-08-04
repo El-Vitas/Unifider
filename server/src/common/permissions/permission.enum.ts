@@ -11,4 +11,6 @@ export enum Resource {
   EQUIPMENT = 'equipment',
   USER = 'user',
   ROLE = 'role',
+  SCHEDULE = 'schedule',
+  BOOKING = 'booking',
 }

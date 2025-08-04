@@ -1,21 +1,9 @@
 model Schedule {
-  id           String   @id @default(uuid())
-  name         String?
-  validFrom    DateTime?
-  validTo      DateTime?
-  createdBy    String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  gymId        String?  @unique
-  courtId      String?  @unique
-
-  admin        User     @relation("AdminSchedules", fields: [createdBy], references: [id])
-
-  gym          Gym?     @relation("GymSchedules", fields: [gymId], references: [id])
-  court        Court?   @relation("CourtSchedules", fields: [courtId], references: [id])
-
-  timeBlocks   ScheduledTimeBlock[]
-
-  @@map("schedules")
+  gym Gym?
+  court Court?
+  timeBlocks ScheduleTimeBlock[]
 }

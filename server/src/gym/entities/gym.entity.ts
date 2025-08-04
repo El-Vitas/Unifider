@@ -9,4 +9,5 @@ export class Gym implements GymPrisma {
   createdAt: Date;
   updatedAt: Date;
   imageUrl: string | null;
+  scheduleId: string;
 }

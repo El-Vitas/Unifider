@@ -1,11 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { BadGatewayException } from '@nestjs/common/exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { daysMap } from 'src/common/constants';
+import { CreateGymDto } from './dto/create-gym.dto';
+import { ScheduleService } from 'src/schedule/schedule.service';
+import { UpdateGymDto } from './dto/update-gym.dto';
 
 @Injectable()
 export class GymService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly scheduleService: ScheduleService,
+  ) {}
 
   async findGymsData() {
     try {
@@ -27,6 +32,8 @@ export class GymService {
               timeBlocks: {
                 select: {
                   dayOfWeek: true,
+                  capacity: true,
+                  isEnabled: true,
                   startTime: true,
                   endTime: true,
                 },
@@ -41,22 +48,7 @@ export class GymService {
         throw new BadGatewayException('No gyms found');
       }
 
-      const gymsWithSchedules = gyms.map((gym) => {
-        const scheduleByDay = gym.schedule?.timeBlocks
-          ? this.groupTimeBlocks(gym.schedule.timeBlocks)
-          : {};
-
-        return {
-          id: gym.id,
-          name: gym.name,
-          description: gym.description,
-          location: gym.location,
-          imageUrl: gym.imageUrl,
-          scheduleByDay,
-        };
-      });
-
-      return gymsWithSchedules;
+      return gyms;
     } catch (e) {
       console.log(e);
       throw new BadGatewayException('Error fetching courts');
@@ -71,7 +63,17 @@ export class GymService {
           id: true,
           name: true,
           description: true,
-          equipment: true,
+          equipment: {
+            select: {
+              equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                  description: true,
+                },
+              },
+            },
+          },
           imageUrl: true,
           location: {
             select: {
@@ -84,6 +86,8 @@ export class GymService {
               timeBlocks: {
                 select: {
                   dayOfWeek: true,
+                  capacity: true,
+                  isEnabled: true,
                   startTime: true,
                   endTime: true,
                 },
@@ -98,17 +102,9 @@ export class GymService {
         throw new BadGatewayException('Gym not found');
       }
 
-      const scheduleByDay = gym.schedule?.timeBlocks
-        ? this.groupTimeBlocks(gym.schedule.timeBlocks)
-        : {};
-
       return {
-        id: gym.id,
-        name: gym.name,
-        description: gym.description,
-        location: gym.location,
-        imageUrl: gym.imageUrl,
-        scheduleByDay,
+        ...gym,
+        equipment: gym.equipment.map((data) => data.equipment),
       };
     } catch (e) {
       console.log(e);
@@ -124,7 +120,17 @@ export class GymService {
           id: true,
           name: true,
           description: true,
-          equipment: true,
+          equipment: {
+            select: {
+              equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                  description: true,
+                },
+              },
+            },
+          },
           imageUrl: true,
           location: {
             select: {
@@ -137,6 +143,8 @@ export class GymService {
               timeBlocks: {
                 select: {
                   dayOfWeek: true,
+                  capacity: true,
+                  isEnabled: true,
                   startTime: true,
                   endTime: true,
                 },
@@ -151,17 +159,9 @@ export class GymService {
         throw new BadGatewayException('Gym not found');
       }
 
-      const scheduleByDay = gym.schedule?.timeBlocks
-        ? this.groupTimeBlocks(gym.schedule.timeBlocks)
-        : {};
-
       return {
-        id: gym.id,
-        name: gym.name,
-        description: gym.description,
-        location: gym.location,
-        imageUrl: gym.imageUrl,
-        scheduleByDay,
+        ...gym,
+        equipment: gym.equipment.map((data) => data.equipment),
       };
     } catch (e) {
       console.log(e);
@@ -169,64 +169,307 @@ export class GymService {
     }
   }
 
-  private groupTimeBlocks(
-    timeBlocks: { dayOfWeek: number; startTime: Date; endTime: Date }[],
-  ): Record<string, string[]> {
-    const result: Record<string, string[]> = {};
+  async create(gymData: CreateGymDto, userId: string) {
+    try {
+      const gym = await this.prisma.$transaction(async (tx) => {
+        const schedule = await this.scheduleService.createSchedule(
+          gymData.schedule,
+        );
 
-    if (!timeBlocks || timeBlocks.length === 0) {
-      return result;
+        const newGym = await tx.gym.create({
+          data: {
+            name: gymData.name,
+            description: gymData.description,
+            locationId: gymData.locationId,
+            createdBy: userId,
+            imageUrl: null,
+            scheduleId: schedule.id,
+            equipment: {
+              create: gymData.equipment.map((equipmentId) => ({
+                equipmentId,
+                quantity: 1,
+              })),
+            },
+          },
+          include: {
+            location: true,
+            equipment: {
+              include: {
+                equipment: true,
+              },
+            },
+            schedule: {
+              include: {
+                timeBlocks: true,
+              },
+            },
+          },
+        });
+
+        return newGym;
+      });
+
+      return gym;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Error creating gym: ${errorMessage}`);
     }
-
-    let currentDayKey: string | null = null;
-    let mergeInProgress: { start: Date; end: Date } | null = null;
-
-    for (const block of timeBlocks) {
-      const dayName = daysMap[block.dayOfWeek];
-      if (!result[dayName]) {
-        result[dayName] = [];
-      }
-
-      if (dayName !== currentDayKey) {
-        if (mergeInProgress) {
-          const formattedTime = `${this.formatTime(
-            mergeInProgress.start,
-          )} - ${this.formatTime(mergeInProgress.end)}`;
-          result[currentDayKey!].push(formattedTime);
-        }
-
-        currentDayKey = dayName;
-        mergeInProgress = { start: block.startTime, end: block.endTime };
-      } else {
-        if (block.startTime.getTime() <= mergeInProgress!.end.getTime()) {
-          if (block.endTime.getTime() > mergeInProgress!.end.getTime()) {
-            mergeInProgress!.end = block.endTime;
-          }
-        } else {
-          const formattedTime = `${this.formatTime(
-            mergeInProgress!.start,
-          )} - ${this.formatTime(mergeInProgress!.end)}`;
-          result[currentDayKey].push(formattedTime);
-          mergeInProgress = { start: block.startTime, end: block.endTime };
-        }
-      }
-    }
-
-    if (mergeInProgress) {
-      const formattedTime = `${this.formatTime(
-        mergeInProgress.start,
-      )} - ${this.formatTime(mergeInProgress.end)}`;
-      if (result[currentDayKey!]) {
-        result[currentDayKey!].push(formattedTime);
-      }
-    }
-
-    return result;
   }
 
-  private formatTime(date: Date): string {
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
+  async updateImage(gymId: string, imageUrl: string) {
+    try {
+      const gym = await this.prisma.gym.update({
+        where: { id: gymId },
+        data: { imageUrl },
+        select: {
+          id: true,
+          name: true,
+          imageUrl: true,
+        },
+      });
+
+      return gym;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Error updating gym image: ${errorMessage}`);
+    }
+  }
+
+  async update(gymId: string, gymData: UpdateGymDto) {
+    try {
+      const gym = await this.prisma.$transaction(async (tx) => {
+        const currentGym = await tx.gym.findUnique({
+          where: { id: gymId },
+          select: { scheduleId: true },
+        });
+
+        if (!currentGym) {
+          throw new Error('Gym not found');
+        }
+
+        const updateData = {
+          name: gymData.name,
+          description: gymData.description,
+          locationId: gymData.locationId,
+          ...(gymData.equipment && {
+            equipment: {
+              deleteMany: {},
+              create: gymData.equipment.map((equipmentId) => ({
+                equipmentId,
+                quantity: 1,
+              })),
+            },
+          }),
+        };
+
+        const updatedGym = await tx.gym.update({
+          where: { id: gymId },
+          data: updateData,
+          include: {
+            location: true,
+            equipment: {
+              include: {
+                equipment: true,
+              },
+            },
+            schedule: {
+              include: {
+                timeBlocks: true,
+              },
+            },
+          },
+        });
+
+        if (gymData.schedule) {
+          await this.scheduleService.updateScheduleTimeBlocks(
+            currentGym.scheduleId,
+            gymData.schedule,
+          );
+        }
+
+        return updatedGym;
+      });
+
+      return gym;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Error updating gym: ${errorMessage}`);
+    }
+  }
+
+  async getGymBookings(
+    gymId: string,
+    filters?: {
+      dayOfWeek?: number;
+      timeBlockId?: string;
+      startDate?: Date;
+      endDate?: Date;
+    },
+  ) {
+    try {
+      const gym = await this.prisma.gym.findUnique({
+        where: { id: gymId },
+        select: { scheduleId: true, name: true },
+      });
+
+      if (!gym) {
+        throw new Error('Gym not found');
+      }
+
+      const whereClause = {
+        scheduleTimeBlock: {
+          scheduleId: gym.scheduleId,
+          ...(filters?.dayOfWeek !== undefined && {
+            dayOfWeek: filters.dayOfWeek,
+          }),
+        },
+        ...(filters?.timeBlockId && {
+          scheduleTimeBlockId: filters.timeBlockId,
+        }),
+        ...(filters?.startDate || filters?.endDate
+          ? {
+              createdAt: {
+                ...(filters.startDate && { gte: filters.startDate }),
+                ...(filters.endDate && { lte: filters.endDate }),
+              },
+            }
+          : {}),
+      };
+
+      const bookings = await this.prisma.scheduledBooking.findMany({
+        where: whereClause,
+        include: {
+          user: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+            },
+          },
+          scheduleTimeBlock: {
+            select: {
+              id: true,
+              dayOfWeek: true,
+              startTime: true,
+              endTime: true,
+              capacity: true,
+            },
+          },
+        },
+        orderBy: [
+          { scheduleTimeBlock: { dayOfWeek: 'asc' } },
+          { scheduleTimeBlock: { startTime: 'asc' } },
+          { createdAt: 'desc' },
+        ],
+      });
+
+      return {
+        gymName: gym.name,
+        bookings,
+        totalBookings: bookings.length,
+      };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Error fetching gym bookings: ${errorMessage}`);
+    }
+  }
+
+  async cancelUserBooking(gymId: string, bookingId: string) {
+    try {
+      const booking = await this.prisma.scheduledBooking.findUnique({
+        where: { id: bookingId },
+        include: {
+          user: {
+            select: { id: true, fullName: true, email: true },
+          },
+          scheduleTimeBlock: {
+            select: {
+              dayOfWeek: true,
+              startTime: true,
+              endTime: true,
+              scheduleId: true,
+            },
+          },
+        },
+      });
+
+      if (!booking) {
+        throw new Error('Booking not found');
+      }
+
+      // Verificar que la reserva pertenece al gym
+      const gym = await this.prisma.gym.findFirst({
+        where: {
+          id: gymId,
+          scheduleId: booking.scheduleTimeBlock.scheduleId,
+        },
+      });
+
+      if (!gym) {
+        throw new Error('Booking does not belong to this gym');
+      }
+
+      await this.prisma.scheduledBooking.delete({
+        where: { id: bookingId },
+      });
+
+      return {
+        success: true,
+        cancelledBooking: booking,
+      };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Error cancelling user booking: ${errorMessage}`);
+    }
+  }
+
+  async resetGymBookings(
+    gymId: string,
+    options?: {
+      dayOfWeek?: number;
+      timeBlockId?: string;
+      reason?: string;
+    },
+  ) {
+    try {
+      const gym = await this.prisma.gym.findUnique({
+        where: { id: gymId },
+        select: { scheduleId: true, name: true },
+      });
+
+      if (!gym) {
+        throw new Error('Gym not found');
+      }
+
+      const whereClause = {
+        scheduleTimeBlock: {
+          scheduleId: gym.scheduleId,
+          ...(options?.dayOfWeek !== undefined && {
+            dayOfWeek: options.dayOfWeek,
+          }),
+        },
+        ...(options?.timeBlockId && {
+          scheduleTimeBlockId: options.timeBlockId,
+        }),
+      };
+
+      const result = await this.prisma.scheduledBooking.deleteMany({
+        where: whereClause,
+      });
+
+      return {
+        success: true,
+        deletedCount: result.count,
+      };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Error resetting gym bookings: ${errorMessage}`);
+    }
   }
 }
