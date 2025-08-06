@@ -104,4 +104,17 @@ export class ScheduleService {
       throw new Error(`Error updating schedule time blocks: ${errorMessage}`);
     }
   }
+
+  async deleteSchedule(id: string) {
+    try {
+      await this.prisma.schedule.delete({
+        where: { id },
+      });
+      return { success: true };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Error deleting schedule: ${errorMessage}`);
+    }
+  }
 }

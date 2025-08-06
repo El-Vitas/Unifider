@@ -401,7 +401,6 @@ export class GymService {
         throw new Error('Booking not found');
       }
 
-      // Verificar que la reserva pertenece al gym
       const gym = await this.prisma.gym.findFirst({
         where: {
           id: gymId,
@@ -470,6 +469,71 @@ export class GymService {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Error resetting gym bookings: ${errorMessage}`);
+    }
+  }
+
+  async deleteGym(id: string): Promise<{ message: string }> {
+    try {
+      const gym = await this.prisma.gym.findUnique({
+        where: { id },
+        select: { id: true, scheduleId: true },
+      });
+
+      if (!gym) {
+        throw new BadGatewayException('Gym not found');
+      }
+
+      await this.prisma.$transaction(async (prisma) => {
+        await prisma.gym.delete({
+          where: { id: gym.id },
+        });
+
+        await prisma.schedule.delete({
+          where: { id: gym.scheduleId },
+        });
+      });
+
+      return { message: 'Gym deleted successfully' };
+    } catch (error) {
+      console.log(error);
+      throw new BadGatewayException('Error deleting gym');
+    }
+  }
+
+  async getGymEquipment(gymName: string) {
+    try {
+      const gym = await this.prisma.gym.findUnique({
+        where: { name: gymName },
+        select: {
+          id: true,
+          name: true,
+          equipment: {
+            select: {
+              equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                  description: true,
+                  imageUrl: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!gym) {
+        throw new BadGatewayException('Gym not found');
+      }
+
+      const equipments = gym.equipment.map(
+        (gymEquipment) => gymEquipment.equipment,
+      );
+
+      return equipments;
+    } catch (error) {
+      console.log(error);
+      throw new BadGatewayException('Error fetching gym equipment');
     }
   }
 }

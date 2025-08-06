@@ -23,6 +23,7 @@ import { User as UserEntity } from 'src/user/entities/user.entity';
 import { ImageUploadInterceptor } from 'src/common/interceptors/file-upload.interceptor';
 import { Express } from 'express';
 import { UpdateGymDto } from './dto/update-gym.dto';
+import { ParseUUIDPipe } from '@nestjs/common';
 
 @Controller('gym')
 export class GymController {
@@ -48,6 +49,15 @@ export class GymController {
     } else {
       return await this.gymService.findOneByName(value);
     }
+  }
+
+  @Get(':gymName/equipment')
+  @Permissions(
+    permissionFactory.canRead(Resource.GYM),
+    permissionFactory.canRead(Resource.EQUIPMENT),
+  )
+  async getGymEquipment(@Param('gymName') gymName: string) {
+    return await this.gymService.getGymEquipment(gymName);
   }
 
   @Post('create')
@@ -141,5 +151,14 @@ export class GymController {
       throw new BadRequestException('Invalid gym ID');
     }
     return await this.gymService.resetGymBookings(gymId, options);
+  }
+
+  @Delete('delete/:id')
+  @Permissions(
+    permissionFactory.canDelete(Resource.GYM),
+    permissionFactory.canRead(Resource.GYM),
+  )
+  deleteLocation(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.gymService.deleteGym(id);
   }
 }

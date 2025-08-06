@@ -12,10 +12,13 @@ import { RightOutlined, UserOutlined } from '@ant-design/icons';
 import type { CustomHttpResponse } from '../../common/types';
 import { useAuth } from '../../common/hooks/useAuth';
 import BtnPrimary from '../../common/components/button/BtnPrimary';
+import BtnDelete from '../../common/components/button/BtnDelete';
+import { useDeleteGym } from '../hooks/useDeleteGym';
 
 const GymAdmin = () => {
   const url = useMemo(() => `${config.apiUrl}/gym`, []);
   const authToken = useAuth().authToken;
+  const { deleteGym, isDeleted } = useDeleteGym();
 
   const fetchGymsFn = useCallback(
     () =>
@@ -67,47 +70,49 @@ const GymAdmin = () => {
         </div>
 
         <div className="flex flex-wrap justify-center gap-6">
-          {gyms.map((gym) => (
-            <GymCard
-              {...gym}
-              key={gym.id}
-              buttons={
-                <>
-                  <BtnCard
-                    as={Link}
-                    to={`/gym/edit/${gym.name.toLowerCase()}`}
-                    className="text-xs py-1.5 px-2"
-                  >
-                    Editar <RightOutlined />
-                  </BtnCard>
+          {gyms
+            .filter((gym) => !isDeleted(gym.id))
+            .map((gym) => (
+              <GymCard
+                {...gym}
+                key={gym.id}
+                buttons={
+                  <>
+                    <BtnCard
+                      as={Link}
+                      to={`/gym/edit/${gym.name.toLowerCase()}`}
+                      className="text-xs py-1.5 px-2"
+                    >
+                      Editar <RightOutlined />
+                    </BtnCard>
 
-                  <BtnCard
-                    as={Link}
-                    to={`/gym/equipment/${gym.name.toLowerCase()}`}
-                    className="text-xs py-1.5 px-2"
-                  >
-                    Ver equipamiento <RightOutlined />
-                  </BtnCard>
+                    <BtnCard
+                      as={Link}
+                      to={`/gym/equipment/${gym.name.toLowerCase()}`}
+                      className="text-xs py-1.5 px-2"
+                    >
+                      Ver equipamiento <RightOutlined />
+                    </BtnCard>
 
-                  <BtnCard
-                    as={Link}
-                    to={`/gym/bookings/${gym.id}`}
-                    className="text-xs py-1.5 px-2"
-                  >
-                    <UserOutlined /> Gestionar reservas
-                  </BtnCard>
+                    <BtnCard
+                      as={Link}
+                      to={`/gym/bookings/${gym.id}`}
+                      className="text-xs py-1.5 px-2"
+                    >
+                      <UserOutlined /> Gestionar reservas
+                    </BtnCard>
 
-                  <BtnCard
-                    as={Link}
-                    to={`/gym/delete/${gym.name.toLowerCase()}`}
-                    className="!text-xs !py-1.5 !px-2"
-                  >
-                    Eliminar <RightOutlined />
-                  </BtnCard>
-                </>
-              }
-            />
-          ))}
+                    <BtnDelete
+                      onDelete={() => deleteGym(gym.id)}
+                      confirmTitle="Confirmar eliminación"
+                      confirmMessage="¿Estás seguro de que quieres eliminar este gimnasio?"
+                    >
+                      Eliminar
+                    </BtnDelete>
+                  </>
+                }
+              />
+            ))}
         </div>
       </>
     </ContainerCards>

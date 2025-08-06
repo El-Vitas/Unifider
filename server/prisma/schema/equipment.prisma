@@ -3,11 +3,11 @@ model Equipment {
   name        String   @unique
   description String?
   imageUrl    String?
-  createdBy   String
+  createdBy   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  admin User @relation("AdminEquipment", fields: [createdBy], references: [id])
+  admin User? @relation("AdminEquipment", fields: [createdBy], references: [id], onDelete: SetNull)
 
   gyms GymEquipment[]
 

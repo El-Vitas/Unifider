@@ -9,6 +9,7 @@ import EquipmentCreate from '../equipment/pages/EquipmentCreate';
 import EquipmentEdit from '../equipment/pages/EquipmentEdit';
 import GymCreate from '../gym/pages/GymCreate';
 import GymBookings from '../gym/pages/GymBookings';
+import GymEquipment from '../gym/pages/GymEquipment';
 
 const AdminRoutes = () => {
   return (
@@ -17,6 +18,7 @@ const AdminRoutes = () => {
       <Route path="/gym/edit/:gymName" element={<GymEdit />} />
       <Route path="/gym/create" element={<GymCreate />} />
       <Route path="/gym/bookings/:gymId" element={<GymBookings />} />
+      <Route path="/gym/equipment/:gymName" element={<GymEquipment />} />
       <Route path="/gym/equipment" element={<EquipmentAdmin />} />
       <Route path="/gym/equipment/create" element={<EquipmentCreate />} />
       <Route
