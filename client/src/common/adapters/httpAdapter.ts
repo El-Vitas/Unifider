@@ -1,4 +1,3 @@
-// src/common/adapters/httpAdapter.ts
 import axios from 'axios';
 import type { CustomHttpResponse } from '../types';
 

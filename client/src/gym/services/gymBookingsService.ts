@@ -61,8 +61,9 @@ const cancelUserBooking = async (
   bookingId: string,
   authToken: string,
 ): Promise<void> => {
+  console.log(gymId);
   await httpAdapter.delete(
-    `${config.apiUrl}/gym/${gymId}/booking/${bookingId}`,
+    `${config.apiUrl}/gym/${gymId}/bookings/${bookingId}`,
     {
       headers: {
         authorization: `Bearer ${authToken}`,
@@ -76,13 +77,14 @@ const deleteAllBookings = async (
   dayOfWeek?: number,
   authToken?: string,
 ): Promise<DeleteBookingsResult> => {
-  const queryParams = new URLSearchParams();
+  const body: { dayOfWeek?: number } = {};
   if (dayOfWeek !== undefined) {
-    queryParams.append('dayOfWeek', dayOfWeek.toString());
+    body.dayOfWeek = dayOfWeek;
   }
 
-  const response = await httpAdapter.delete<DeleteBookingsResult>(
-    `${config.apiUrl}/gym/${gymId}/bookings?${queryParams.toString()}`,
+  const response = await httpAdapter.post<DeleteBookingsResult>(
+    `${config.apiUrl}/gym/${gymId}/bookings/reset`,
+    body,
     {
       headers: {
         authorization: `Bearer ${authToken}`,

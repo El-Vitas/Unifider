@@ -10,6 +10,7 @@ import {
   Patch,
   Delete,
   Query,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { GymService } from './gym.service';
 import { CreateGymDto } from './dto/create-gym.dto';
@@ -23,7 +24,6 @@ import { User as UserEntity } from 'src/user/entities/user.entity';
 import { ImageUploadInterceptor } from 'src/common/interceptors/file-upload.interceptor';
 import { Express } from 'express';
 import { UpdateGymDto } from './dto/update-gym.dto';
-import { ParseUUIDPipe } from '@nestjs/common';
 
 @Controller('gym')
 export class GymController {
@@ -68,7 +68,7 @@ export class GymController {
   )
   @UseInterceptors(UserInterceptor)
   async getGymScheduleForBooking(
-    @Param('gymId') gymId: string,
+    @Param('gymId', ParseUUIDPipe) gymId: string,
     @User() user: UserEntity,
   ) {
     return await this.gymService.getGymScheduleForBooking(gymId, user.id);
@@ -104,10 +104,10 @@ export class GymController {
     permissionFactory.canCreate(Resource.GYM),
     permissionFactory.canCreate(Resource.SCHEDULE),
   )
-  async editGym(@Param('id') id: string, @Body() updateGymDto: UpdateGymDto) {
-    if (!isUUID(id)) {
-      throw new BadRequestException('Invalid gym ID');
-    }
+  async editGym(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateGymDto: UpdateGymDto,
+  ) {
     return await this.gymService.update(id, updateGymDto);
   }
 
@@ -118,16 +118,12 @@ export class GymController {
     permissionFactory.canRead(Resource.BOOKING),
   )
   async getGymBookings(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Query('dayOfWeek') dayOfWeek?: string,
     @Query('timeBlockId') timeBlockId?: string,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
-    if (!isUUID(id)) {
-      throw new BadRequestException('Invalid gym ID');
-    }
-
     const filters = {
       ...(dayOfWeek && { dayOfWeek: parseInt(dayOfWeek) }),
       ...(timeBlockId && { timeBlockId }),
@@ -141,12 +137,9 @@ export class GymController {
   @Delete(':id/bookings/:bookingId')
   @Permissions(permissionFactory.canDelete(Resource.BOOKING))
   async cancelUserBooking(
-    @Param('id') gymId: string,
-    @Param('bookingId') bookingId: string,
+    @Param('id', ParseUUIDPipe) gymId: string,
+    @Param('bookingId', ParseUUIDPipe) bookingId: string,
   ) {
-    if (!isUUID(gymId) || !isUUID(bookingId)) {
-      throw new BadRequestException('Invalid ID format');
-    }
     return await this.gymService.cancelUserBooking(gymId, bookingId);
   }
 
@@ -154,13 +147,10 @@ export class GymController {
   @UseInterceptors(UserInterceptor)
   @Permissions(permissionFactory.canDelete(Resource.BOOKING))
   async cancelUserBookingByTimeBlock(
-    @Param('id') gymId: string,
-    @Param('timeBlockId') timeBlockId: string,
+    @Param('id', ParseUUIDPipe) gymId: string,
+    @Param('timeBlockId', ParseUUIDPipe) timeBlockId: string,
     @User() user: UserEntity,
   ) {
-    if (!isUUID(gymId) || !isUUID(timeBlockId)) {
-      throw new BadRequestException('Invalid ID format');
-    }
     return await this.gymService.cancelUserBookingByTimeBlock(
       gymId,
       timeBlockId,
@@ -168,10 +158,10 @@ export class GymController {
     );
   }
 
-  @Delete(':id/bookings/reset')
+  @Post(':id/bookings/reset')
   @Permissions(permissionFactory.canDelete(Resource.BOOKING))
   async resetGymBookings(
-    @Param('id') gymId: string,
+    @Param('id', ParseUUIDPipe) gymId: string,
     @Body()
     options?: {
       dayOfWeek?: number;
@@ -179,10 +169,7 @@ export class GymController {
       reason?: string;
     },
   ) {
-    if (!isUUID(gymId)) {
-      throw new BadRequestException('Invalid gym ID');
-    }
-    return await this.gymService.resetGymBookings(gymId, options);
+    return await this.gymService.resetGymBookings(gymId, options || {});
   }
 
   @Post('booking/multiple')
@@ -206,7 +193,7 @@ export class GymController {
     permissionFactory.canDelete(Resource.GYM),
     permissionFactory.canRead(Resource.GYM),
   )
-  deleteLocation(@Param('id', new ParseUUIDPipe()) id: string) {
+  deleteLocation(@Param('id', ParseUUIDPipe) id: string) {
     return this.gymService.deleteGym(id);
   }
 }

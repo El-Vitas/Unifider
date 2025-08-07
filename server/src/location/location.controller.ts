@@ -61,7 +61,7 @@ export class LocationsController {
     permissionFactory.canDelete(Resource.LOCATION),
     permissionFactory.canRead(Resource.LOCATION),
   )
-  deleteLocation(@Param('id', new ParseUUIDPipe()) id: string) {
+  deleteLocation(@Param('id', ParseUUIDPipe) id: string) {
     return this.locationService.deleteLocation(id);
   }
 }
