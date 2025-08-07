@@ -18,6 +18,7 @@ import { EquipmentModule } from './equipment/equipment.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { randomBytes } from 'crypto';
 
 @Module({
   imports: [
@@ -33,12 +34,23 @@ import { diskStorage } from 'multer';
       storage: diskStorage({
         destination: join(__dirname, '..', 'uploads', 'gym-images'),
         filename: (req, file, cb) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const timestamp = Date.now();
+          const randomSuffix = randomBytes(16).toString('hex');
           const ext = file.originalname.split('.').pop();
-          cb(null, `${file.fieldname}-${uniqueSuffix}.${ext}`);
+          cb(null, `${file.fieldname}-${timestamp}-${randomSuffix}.${ext}`);
         },
       }),
+      limits: {
+        fileSize: 5 * 1024 * 1024,
+        files: 1,
+      },
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype.match(/\/(jpg|jpeg|png|gif|webp)$/)) {
+          cb(null, true);
+        } else {
+          cb(new Error('Only image files are allowed!'), false);
+        }
+      },
     }),
     UserModule,
     WorkshopModule,
