@@ -41,7 +41,13 @@ export class CourtService {
 
       const courtsWithSchedules = courts.map((court) => {
         const scheduleByDay = court.schedule?.timeBlocks
-          ? this.groupTimeBlocks(court.schedule.timeBlocks)
+          ? this.groupTimeBlocks(
+              court.schedule.timeBlocks.map((block) => ({
+                ...block,
+                startTime: new Date(block.startTime),
+                endTime: new Date(block.endTime),
+              })),
+            )
           : [];
 
         return {

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-
+import BtnHeader from './BtnHeader';
 type Props = {
   to: string;
   name: string;
@@ -7,9 +7,9 @@ type Props = {
 
 const NavLinkItem = ({ to, name }: Props) => {
   return (
-    <Link to={to} className="btn-header font-medium text-white">
+    <BtnHeader as={Link} to={to}>
       {name}
-    </Link>
+    </BtnHeader>
   );
 };
 

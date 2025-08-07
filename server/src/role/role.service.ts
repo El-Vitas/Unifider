@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotFoundException } from '@nestjs/common/exceptions';
-
+import type { UserRole } from './entities/roles';
 @Injectable()
 export class RoleService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findOneByName(name: string) {
+  async findOneByName(name: UserRole) {
     const role = await this.prisma.role.findUnique({
       where: { name },
     });

@@ -1,14 +1,75 @@
 import { useState } from 'react';
-import { toast } from 'react-toastify';
-import FormField from '../components/FormAuthField';
+import InputField from '../../common/components/form/InputField';
+import config from '../../config';
+import { httpAdapter } from '../../common/adapters/httpAdapter';
+import type { LoginResponse } from '../types';
+import { customToast } from '../../common/utils/customToast';
+import { isHttpErrorResponse } from '../../common/utils/typeGuards';
+import { jwtDecode } from 'jwt-decode';
+import { useAuth } from '../../common/hooks/useAuth';
+import type { DecodedToken } from '../../common/types';
+import { useNavigate } from 'react-router-dom';
+import type { CustomHttpResponse } from '../../common/types';
 
 const Login = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const auth = useAuth();
+  const navigate = useNavigate();
+  const handleSuccessfulLogin = (
+    response: CustomHttpResponse<LoginResponse>,
+  ) => {
+    customToast.success('Inicio de sesión exitoso');
+    const token = response.data.token;
 
-  const handleSubmit = () => {
-    console.log('llamada al backend');
-    toast.success('llamada al backend');
+    if (!token) {
+      throw new Error('Token no recibido en la respuesta del servidor.');
+    }
+
+    const decoded: DecodedToken = jwtDecode(token);
+    const role = decoded.role;
+
+    if (!role) {
+      throw new Error('Rol no encontrado en el token.');
+    }
+
+    auth.login(token, role);
+    navigate('/');
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      if (!email || !password) {
+        customToast.error('Email y contraseña son obligatorios');
+        return;
+      }
+
+      const response = await httpAdapter.post<LoginResponse>(
+        `${config.apiUrl}/auth/login`,
+        { email, password },
+      );
+
+      if (response.status === 201) {
+        handleSuccessfulLogin(response);
+      } else {
+        customToast.error('Inicio de sesión fallido: Respuesta inesperada.');
+      }
+    } catch (error) {
+      if (isHttpErrorResponse(error)) {
+        if (error.response?.status === 401) {
+          customToast.error(
+            'Correo o contraseña inválidos. Por favor, intenta de nuevo.',
+          );
+        } else if (error.response?.status === 500) {
+          customToast.error(
+            'Error del servidor. Por favor, inténtalo más tarde.',
+          );
+        }
+      } else {
+        customToast.error('Fallo en el inicio de sesión: Error desconocido');
+      }
+    }
   };
 
   return (
@@ -19,7 +80,7 @@ const Login = () => {
         </h2>
 
         <form onSubmit={handleSubmit}>
-          <FormField
+          <InputField
             id="email"
             label="Correo Electrónico"
             type="email"
@@ -29,7 +90,7 @@ const Login = () => {
             required={true}
           />
 
-          <FormField
+          <InputField
             id="password"
             label="Contraseña"
             type="password"

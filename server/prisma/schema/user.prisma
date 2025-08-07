@@ -16,7 +16,6 @@ model User {
   createdGyms      Gym[]      @relation("AdminGyms")
   createdCourts    Court[]    @relation("AdminCourts")
   createdEquipment Equipment[] @relation("AdminEquipment")
-  createdSchedules Schedule[] @relation("AdminSchedules")
 
   sectionBookings  SectionBooking[]   @relation("UserSectionBookings")
   scheduledBookings ScheduledBooking[] @relation("UserScheduledBookings")

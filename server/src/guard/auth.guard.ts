@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
+import { checkIfIsPublic } from 'src/common/utils';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -18,11 +19,7 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublic = this.reflector.getAllAndOverride<boolean>('isPublic', [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-    if (isPublic) {
+    if (checkIfIsPublic(context, this.reflector)) {
       return true;
     }
 
@@ -31,19 +28,34 @@ export class AuthGuard implements CanActivate {
     if (!token) {
       throw new UnauthorizedException();
     }
-
-    try {
-      const payload = await this.jwtService.verifyAsync<{ email: string }>(
-        token,
-        {
-          secret: this.configService.get<string>('config.jwtSecret'),
-        },
-      );
-      request['user'] = payload;
-    } catch {
-      throw new UnauthorizedException();
-    }
+    const payload = await this.getPayloadFromToken(token);
+    this.insertPayloadToRequest(request, payload);
     return true;
+  }
+
+  private insertPayloadToRequest(
+    request: Request,
+    payload: { email: string; role: string },
+  ): void {
+    request['user'] = {
+      payload,
+      data: null,
+    };
+  }
+  private async getPayloadFromToken(
+    token: string,
+  ): Promise<{ email: string; role: string }> {
+    try {
+      const payload = await this.jwtService.verifyAsync<{
+        email: string;
+        role: string;
+      }>(token, {
+        secret: this.configService.get<string>('config.jwtSecret'),
+      });
+      return payload;
+    } catch {
+      throw new UnauthorizedException('Invalid token');
+    }
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
