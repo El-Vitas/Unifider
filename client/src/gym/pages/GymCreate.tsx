@@ -133,7 +133,6 @@ const GymCreate = () => {
     setSubmitting(true);
 
     try {
-      // Convert schedule and capacity data to time blocks
       const timeBlocks = convertScheduleForSubmission(
         scheduleByDay,
         capacityByDay,
@@ -154,7 +153,6 @@ const GymCreate = () => {
           ?.filter((equip) => equipment.includes(equip.name))
           .map((equip) => equip.id) || [];
 
-      // Prepare gym data
       const gymData: GymCreateRequest = {
         name: name.trim(),
         description: description.trim() || undefined,
@@ -165,7 +163,6 @@ const GymCreate = () => {
         },
       };
 
-      // First, create the gym
       const createGymResponse = await httpAdapter.post<GymType>(
         `${config.apiUrl}/gym/create`,
         gymData,
@@ -197,7 +194,6 @@ const GymCreate = () => {
       customToast.success('Gimnasio creado correctamente');
       navigate(redirectUrl);
     } catch (err: unknown) {
-      console.log('Error creating gym:', err);
       if (err instanceof Error) {
         customToast.error(`Error al crear el gimnasio: ${err.message}`);
       } else {

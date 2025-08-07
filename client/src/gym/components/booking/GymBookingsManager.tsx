@@ -1,21 +1,26 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { CloseOutlined, UserOutlined } from '@ant-design/icons';
 import {
   gymBookingsService,
   type GymBooking,
-  type BookingFilters,
-} from '../services/gymBookingsService';
-import { customToast } from '../../common/utils/customToast';
-import { useAuth } from '../../common/hooks/useAuth';
-import BtnPrimary from '../../common/components/button/BtnPrimary';
+  type BookingFilters as BookingFiltersType,
+} from '../../services/gymBookingsService';
+import { customToast } from '../../../common/utils/customToast';
+import { useAuth } from '../../../common/hooks/useAuth';
 import {
-  BookingPageHeader,
-  BookingFiltersControls,
-  BookingStatsDisplay,
-  BookingListItem,
-  BookingEmptyState,
-  ResetConfirmationModal,
-} from '../components/booking';
+  BookingFilters,
+  BookingStats,
+  BookingItem,
+  EmptyState,
+  ConfirmationModal,
+} from '../../../common/components/booking-management';
+
+interface GymBookingsManagerProps {
+  gymId: string;
+  gymName: string;
+  isOpen: boolean;
+  onClose: () => void;
+}
 
 const DAYS_OF_WEEK = [
   { value: 0, label: 'Domingo' },
@@ -27,25 +32,25 @@ const DAYS_OF_WEEK = [
   { value: 6, label: 'Sábado' },
 ];
 
-const GymBookings = () => {
-  const { gymId } = useParams<{ gymId: string }>();
-  const navigate = useNavigate();
+export const GymBookingsManager: React.FC<GymBookingsManagerProps> = ({
+  gymId,
+  gymName,
+  isOpen,
+  onClose,
+}) => {
   const { authToken } = useAuth();
-
   const [bookings, setBookings] = useState<GymBooking[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalBookings, setTotalBookings] = useState(0);
-
-  const [filters, setFilters] = useState<BookingFilters>({});
+  const [filters, setFilters] = useState<BookingFiltersType>({});
   const [selectedDay, setSelectedDay] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
-
   const [isResetting, setIsResetting] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   const fetchBookings = useCallback(async () => {
-    if (!authToken || !gymId) {
-      customToast.error('No estás autenticado o falta el ID del gimnasio');
+    if (!authToken) {
+      customToast.error('No estás autenticado');
       return;
     }
 
@@ -80,10 +85,10 @@ const GymBookings = () => {
   }, [bookings, searchTerm]);
 
   useEffect(() => {
-    if (gymId) {
+    if (isOpen && gymId) {
       fetchBookings();
     }
-  }, [gymId, fetchBookings]);
+  }, [isOpen, gymId, fetchBookings]);
 
   const handleCancelBooking = useCallback(
     async (bookingId: string) => {
@@ -93,7 +98,7 @@ const GymBookings = () => {
 
       if (!confirmed) return;
 
-      if (!authToken || !gymId) {
+      if (!authToken) {
         customToast.error('No estás autenticado');
         return;
       }
@@ -111,7 +116,7 @@ const GymBookings = () => {
   );
 
   const handleResetAllBookings = useCallback(async () => {
-    if (!authToken || !gymId) {
+    if (!authToken) {
       customToast.error('No estás autenticado');
       return;
     }
@@ -171,76 +176,85 @@ const GymBookings = () => {
     [],
   );
 
-  if (!gymId) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600">
-            Error: ID de gimnasio no encontrado
-          </h1>
-          <BtnPrimary onClick={() => navigate('/gym')} className="mt-4">
-            Volver a Gimnasios
-          </BtnPrimary>
-        </div>
-      </div>
-    );
-  }
+  if (!isOpen) return null;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <BookingPageHeader onBackClick={() => navigate('/gym')} />
-
-      <BookingFiltersControls
-        selectedDay={selectedDay}
-        searchTerm={searchTerm}
-        onDayFilterChange={handleDayFilterChange}
-        onSearchTermChange={setSearchTerm}
-        onResetClick={() => setShowResetConfirm(true)}
-        canReset={filteredBookings.length > 0}
-      />
-
-      <BookingStatsDisplay
-        totalBookings={totalBookings}
-        filteredCount={filteredBookings.length}
-        selectedDay={selectedDay}
-        getDayName={getDayName}
-      />
-
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#005E90]"></div>
-            <span className="ml-3 text-gray-600">Cargando reservas...</span>
+    <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div className="flex items-center gap-3">
+            <UserOutlined
+              className="w-6 h-6 text-[#005E90]"
+              style={{ fontSize: '24px', color: '#005E90' }}
+            />
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">
+                Gestionar Reservas
+              </h2>
+              <p className="text-sm text-gray-600">{gymName}</p>
+            </div>
           </div>
-        ) : filteredBookings.length === 0 ? (
-          <BookingEmptyState searchTerm={searchTerm} />
-        ) : (
-          <div className="divide-y divide-gray-200">
-            {filteredBookings.map((booking) => (
-              <BookingListItem
-                key={booking.id}
-                booking={booking}
-                onCancelBooking={handleCancelBooking}
-                formatTime={formatTime}
-                formatDate={formatDate}
-                getDayName={getDayName}
-              />
-            ))}
-          </div>
-        )}
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <CloseOutlined className="w-5 h-5" style={{ fontSize: '20px' }} />
+          </button>
+        </div>
+
+        <div className="p-6 border-b border-gray-200 bg-gray-50">
+          <BookingFilters
+            selectedDay={selectedDay}
+            searchTerm={searchTerm}
+            filteredBookingsLength={filteredBookings.length}
+            daysOfWeek={DAYS_OF_WEEK}
+            onDayChange={handleDayFilterChange}
+            onSearchChange={setSearchTerm}
+            onResetClick={() => setShowResetConfirm(true)}
+          />
+
+          <BookingStats
+            totalBookings={totalBookings}
+            filteredCount={filteredBookings.length}
+            selectedDay={selectedDay}
+            getDayName={getDayName}
+          />
+        </div>
+
+        <div className="flex-1 overflow-y-auto max-h-96">
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#005E90]"></div>
+            </div>
+          ) : filteredBookings.length === 0 ? (
+            <EmptyState searchTerm={searchTerm} />
+          ) : (
+            <div className="p-6 space-y-3">
+              {filteredBookings.map((booking) => (
+                <BookingItem
+                  key={booking.id}
+                  booking={booking}
+                  formatTime={formatTime}
+                  formatDate={formatDate}
+                  getDayName={getDayName}
+                  onCancel={handleCancelBooking}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        <ConfirmationModal
+          isOpen={showResetConfirm}
+          isLoading={isResetting}
+          selectedDay={selectedDay}
+          filteredBookingsLength={filteredBookings.length}
+          getDayName={getDayName}
+          onConfirm={handleResetAllBookings}
+          onCancel={() => setShowResetConfirm(false)}
+        />
       </div>
-
-      <ResetConfirmationModal
-        isVisible={showResetConfirm}
-        selectedDay={selectedDay}
-        filteredCount={filteredBookings.length}
-        isResetting={isResetting}
-        getDayName={getDayName}
-        onConfirm={handleResetAllBookings}
-        onCancel={() => setShowResetConfirm(false)}
-      />
     </div>
   );
 };
-
-export default GymBookings;

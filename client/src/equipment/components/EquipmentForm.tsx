@@ -74,7 +74,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({
       <InputFileField
         id="equipmentImage"
         label="Imagen del Equipamiento"
-        onChange={(e) => console.log(e.target.files)}
+        onChange={() => {}}
         required={false}
         accept="image/*"
         multiple={false}

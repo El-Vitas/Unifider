@@ -48,7 +48,6 @@ const EquipmentCreate = () => {
       customToast.success('Equipamiento creado correctamente');
       navigate(redirectUrl);
     } catch (err: unknown) {
-      console.log('Error creating equipment:', err);
       if (err instanceof Error) {
         customToast.error(`Error al crear el equipamiento: ${err.message}`);
       } else {

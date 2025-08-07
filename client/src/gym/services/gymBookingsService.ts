@@ -3,109 +3,100 @@ import config from '../../config';
 
 export interface GymBooking {
   id: string;
-  bookingDate: Date;
-  createdAt: Date;
+  scheduleTimeBlockId: string;
+  userId: string;
   user: {
-    id: string;
     fullName: string;
     email: string;
   };
   scheduleTimeBlock: {
-    id: string;
+    startTime: string;
+    endTime: string;
     dayOfWeek: number;
-    startTime: Date;
-    endTime: Date;
-    capacity: number;
   };
-}
-
-export interface GymBookingsResponse {
-  gymName: string;
-  bookings: GymBooking[];
-  totalBookings: number;
+  bookingDate: string;
+  createdAt: string;
 }
 
 export interface BookingFilters {
-  dayOfWeek?: number;
+  userId?: string;
   timeBlockId?: string;
-  startDate?: Date;
-  endDate?: Date;
+  dayOfWeek?: number;
+  startDate?: string;
+  endDate?: string;
+  status?: string;
 }
 
-export interface ResetBookingsOptions {
-  dayOfWeek?: number;
-  timeBlockId?: string;
-  reason?: string;
+export interface DeleteBookingsResult {
+  deletedCount: number;
 }
+
+const getAllBookings = async (
+  gymId: string,
+  filters: BookingFilters = {},
+  authToken: string,
+): Promise<{ data: GymBooking[]; total: number }> => {
+  const queryParams = new URLSearchParams();
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      queryParams.append(key, value.toString());
+    }
+  });
+
+  const response = await httpAdapter.get<{ data: GymBooking[]; total: number }>(
+    `${config.apiUrl}/gym/${gymId}/bookings?${queryParams.toString()}`,
+    {
+      headers: {
+        authorization: `Bearer ${authToken}`,
+      },
+    },
+  );
+
+  return response.data;
+};
+
+const cancelUserBooking = async (
+  gymId: string,
+  bookingId: string,
+  authToken: string,
+): Promise<void> => {
+  await httpAdapter.delete(
+    `${config.apiUrl}/gym/${gymId}/booking/${bookingId}`,
+    {
+      headers: {
+        authorization: `Bearer ${authToken}`,
+      },
+    },
+  );
+};
+
+const deleteAllBookings = async (
+  gymId: string,
+  dayOfWeek?: number,
+  authToken?: string,
+): Promise<DeleteBookingsResult> => {
+  const queryParams = new URLSearchParams();
+  if (dayOfWeek !== undefined) {
+    queryParams.append('dayOfWeek', dayOfWeek.toString());
+  }
+
+  const response = await httpAdapter.delete<DeleteBookingsResult>(
+    `${config.apiUrl}/gym/${gymId}/bookings?${queryParams.toString()}`,
+    {
+      headers: {
+        authorization: `Bearer ${authToken}`,
+      },
+    },
+  );
+
+  return response.data;
+};
 
 export const gymBookingsService = {
-  // Obtener todas las reservas de un gimnasio
-  async getGymBookings(
-    gymId: string,
-    authToken: string,
-    filters?: BookingFilters,
-  ): Promise<GymBookingsResponse> {
-    const params = new URLSearchParams();
-
-    if (filters?.dayOfWeek !== undefined) {
-      params.append('dayOfWeek', filters.dayOfWeek.toString());
-    }
-    if (filters?.timeBlockId) {
-      params.append('timeBlockId', filters.timeBlockId);
-    }
-    if (filters?.startDate) {
-      params.append('startDate', filters.startDate.toISOString());
-    }
-    if (filters?.endDate) {
-      params.append('endDate', filters.endDate.toISOString());
-    }
-
-    const response = await httpAdapter.get(
-      `${config.apiUrl}/gym/${gymId}/bookings?${params.toString()}`,
-      {
-        headers: {
-          authorization: `Bearer ${authToken}`,
-          'Content-Type': 'application/json',
-        },
-      },
-    );
-    return response.data as GymBookingsResponse;
-  },
-
-  // Cancelar una reserva específica
-  async cancelUserBooking(
-    gymId: string,
-    bookingId: string,
-    authToken: string,
-  ): Promise<{ success: boolean; cancelledBooking: GymBooking }> {
-    const response = await httpAdapter.delete(
-      `${config.apiUrl}/gym/${gymId}/bookings/${bookingId}`,
-      {
-        headers: {
-          authorization: `Bearer ${authToken}`,
-          'Content-Type': 'application/json',
-        },
-      },
-    );
-    return response.data as { success: boolean; cancelledBooking: GymBooking };
-  },
-
-  // Reset masivo de reservas
-  async resetGymBookings(
-    gymId: string,
-    authToken: string,
-    options?: ResetBookingsOptions,
-  ): Promise<{ success: boolean; deletedCount: number }> {
-    const response = await httpAdapter.delete(
-      `${config.apiUrl}/gym/${gymId}/bookings/reset`,
-      {
-        body: JSON.stringify(options),
-        headers: {
-          authorization: `Bearer ${authToken}`,
-          'Content-Type': 'application/json',
-        },
-      },
-    );
-    return response.data as { success: boolean; deletedCount: number };
-  },
+  getAllBookings,
+  getGymBookings: getAllBookings,
+  cancelUserBooking,
+  deleteAllBookings,
+  resetGymBookings: deleteAllBookings,
 };

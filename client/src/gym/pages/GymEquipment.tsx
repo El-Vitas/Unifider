@@ -83,12 +83,7 @@ const GymEquipment = () => {
 
         <div className="flex flex-wrap justify-center gap-6">
           {equipments.map((equipment) => (
-            <EquipmentCard
-              {...equipment}
-              key={equipment.id}
-              // Sin botones de acción - solo visualización
-              buttons={<></>}
-            />
+            <EquipmentCard {...equipment} key={equipment.id} buttons={<></>} />
           ))}
         </div>
       </>

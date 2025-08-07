@@ -7,9 +7,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
 
-  const handleSubmit = () => {
-    console.log('llamada al backend');
-  };
+  const handleSubmit = () => {};
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center">

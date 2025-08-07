@@ -49,7 +49,6 @@ const Login = () => {
         `${config.apiUrl}/auth/login`,
         { email, password },
       );
-      console.log('Login response:', response);
 
       if (response.status === 201) {
         handleSuccessfulLogin(response);

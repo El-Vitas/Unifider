@@ -60,6 +60,20 @@ export class GymController {
     return await this.gymService.getGymEquipment(gymName);
   }
 
+  @Get(':gymId/schedule')
+  @Permissions(
+    permissionFactory.canRead(Resource.GYM),
+    permissionFactory.canRead(Resource.SCHEDULE),
+    permissionFactory.canRead(Resource.BOOKING),
+  )
+  @UseInterceptors(UserInterceptor)
+  async getGymScheduleForBooking(
+    @Param('gymId') gymId: string,
+    @User() user: UserEntity,
+  ) {
+    return await this.gymService.getGymScheduleForBooking(gymId, user.id);
+  }
+
   @Post('create')
   @Permissions(
     permissionFactory.canCreate(Resource.GYM),
@@ -136,6 +150,24 @@ export class GymController {
     return await this.gymService.cancelUserBooking(gymId, bookingId);
   }
 
+  @Delete(':id/timeblock/:timeBlockId/booking')
+  @UseInterceptors(UserInterceptor)
+  @Permissions(permissionFactory.canDelete(Resource.BOOKING))
+  async cancelUserBookingByTimeBlock(
+    @Param('id') gymId: string,
+    @Param('timeBlockId') timeBlockId: string,
+    @User() user: UserEntity,
+  ) {
+    if (!isUUID(gymId) || !isUUID(timeBlockId)) {
+      throw new BadRequestException('Invalid ID format');
+    }
+    return await this.gymService.cancelUserBookingByTimeBlock(
+      gymId,
+      timeBlockId,
+      user.id,
+    );
+  }
+
   @Delete(':id/bookings/reset')
   @Permissions(permissionFactory.canDelete(Resource.BOOKING))
   async resetGymBookings(
@@ -151,6 +183,22 @@ export class GymController {
       throw new BadRequestException('Invalid gym ID');
     }
     return await this.gymService.resetGymBookings(gymId, options);
+  }
+
+  @Post('booking/multiple')
+  @Permissions(permissionFactory.canCreate(Resource.BOOKING))
+  @UseInterceptors(UserInterceptor)
+  async createMultipleBookings(
+    @Body()
+    bookingData: {
+      bookings: Array<{ scheduleTimeBlockId: string; bookingDate: string }>;
+    },
+    @User() user: UserEntity,
+  ) {
+    return await this.gymService.createMultipleBookings(
+      bookingData.bookings,
+      user.id,
+    );
   }
 
   @Delete('delete/:id')

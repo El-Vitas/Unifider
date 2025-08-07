@@ -36,7 +36,6 @@ const GymEdit = () => {
 
   const authToken = useAuth().authToken;
 
-  // Initialize schedule manager
   const {
     scheduleByDay,
     capacityByDay,
@@ -149,7 +148,6 @@ const GymEdit = () => {
       setEquipment(equipmentNames);
       setLocation(gymData.data.location?.name || '');
       if (gymData.data.schedule?.timeBlocks && scheduleData?.data) {
-        console.log('Initial schedule:', gymData.data.schedule.timeBlocks);
         const {
           scheduleByDay: initialSchedule,
           capacityByDay: initialCapacity,
@@ -210,7 +208,6 @@ const GymEdit = () => {
     try {
       setSubmitting(true);
 
-      // Get selected location ID
       const selectedLocation = locationsData?.data?.find(
         (loc) => loc.name === location,
       );
@@ -219,20 +216,17 @@ const GymEdit = () => {
         return;
       }
 
-      // Get selected equipment IDs
       const selectedEquipmentIds =
         equipmentData?.data
           ?.filter((equip) => equipment.includes(equip.name))
           .map((equip) => equip.id) || [];
 
-      // Convert schedule and capacity data to time blocks
       const timeBlocks = convertScheduleForSubmission(
         scheduleByDay,
         capacityByDay,
         scheduleData?.data || [],
       );
 
-      // Prepare update data
       const updateData = {
         name: name.trim(),
         description: description.trim() || undefined,
@@ -243,7 +237,6 @@ const GymEdit = () => {
         },
       };
 
-      // Update the gym
       await httpAdapter.patch(
         `${config.apiUrl}/gym/${gymData.data.id}/edit`,
         updateData,
@@ -255,7 +248,6 @@ const GymEdit = () => {
         },
       );
 
-      // Handle image upload if there's a new image
       if (imageFile && gymData.data.id) {
         const imageFormData = new FormData();
         imageFormData.append('image', imageFile);

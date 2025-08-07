@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import MainForm from '../../common/components/MainForm'; // Asumiendo que MainForm es tu DataForm general
-import LocationForm from '../components/LocationForm'; // Importa el componente de los campos del formulario
+import MainForm from '../../common/components/MainForm';
+import LocationForm from '../components/LocationForm';
 import { httpAdapter } from '../../common/adapters/httpAdapter';
 import { customToast } from '../../common/utils/customToast';
 import config from '../../config';
