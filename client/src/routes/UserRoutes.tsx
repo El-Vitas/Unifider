@@ -11,7 +11,7 @@ const UserRoutes = () => {
       <Route path="/gym" element={<Gym />} />
       <Route path="/gym/equipment/:gymName" element={<GymEquipment />} />
       <Route path="/gym/booking/:gymId" element={<GymBooking />} />
-      
+
       <Route path="/court" element={<Court />} />
       <Route path="/court/booking/:courtId" element={<CourtBooking />} />
     </Routes>

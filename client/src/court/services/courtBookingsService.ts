@@ -44,14 +44,14 @@ const getAllBookings = async (
     }
   });
 
-  const response = await httpAdapter.get<{ data: CourtBooking[]; total: number }>(
-    `${config.apiUrl}/court/${courtId}/bookings?${queryParams.toString()}`,
-    {
-      headers: {
-        authorization: `Bearer ${authToken}`,
-      },
+  const response = await httpAdapter.get<{
+    data: CourtBooking[];
+    total: number;
+  }>(`${config.apiUrl}/court/${courtId}/bookings?${queryParams.toString()}`, {
+    headers: {
+      authorization: `Bearer ${authToken}`,
     },
-  );
+  });
 
   return response.data;
 };

@@ -30,7 +30,10 @@ const CourtBooking = () => {
   const navigate = useNavigate();
   const authToken = useAuth().authToken;
 
-  const url = useMemo(() => `${config.apiUrl}/court/${courtId}/schedule`, [courtId]);
+  const url = useMemo(
+    () => `${config.apiUrl}/court/${courtId}/schedule`,
+    [courtId],
+  );
 
   const fetchScheduleFn = useCallback(
     () =>

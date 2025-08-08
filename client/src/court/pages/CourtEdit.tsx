@@ -50,7 +50,10 @@ const CourtEdit = () => {
 
   const { courtName } = useParams<{ courtName: string }>();
 
-  const urlCourt = useMemo(() => `${config.apiUrl}/court/${courtName}`, [courtName]);
+  const urlCourt = useMemo(
+    () => `${config.apiUrl}/court/${courtName}`,
+    [courtName],
+  );
   const urlLocation = useMemo(() => `${config.apiUrl}/location`, []);
 
   const fetchCourtFn = useCallback(
@@ -78,7 +81,10 @@ const CourtEdit = () => {
     loading: courtLoading,
     error: courtError,
     execute: fetchCourt,
-  } = useAsync<CustomHttpResponse<CourtType>>(fetchCourtFn, 'Failed to fetch Court');
+  } = useAsync<CustomHttpResponse<CourtType>>(
+    fetchCourtFn,
+    'Failed to fetch Court',
+  );
 
   const {
     data: locationsData,

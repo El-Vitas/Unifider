@@ -23,7 +23,7 @@ export type CourtType = {
   description?: string;
   locationId: string;
   location: LocationType;
-  imageUrl?: string; 
+  imageUrl?: string;
   scheduleId: string;
   schedule?: {
     timeBlocks: Array<{

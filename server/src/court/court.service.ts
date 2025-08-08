@@ -454,50 +454,32 @@ export class CourtService {
     }
   }
 
-  async deleteCourt(id: string) {
+  async deleteCourt(id: string): Promise<{ message: string }> {
     try {
       const court = await this.prisma.court.findUnique({
         where: { id },
-        include: {
-          schedule: {
-            include: {
-              timeBlocks: {
-                include: {
-                  ScheduledBooking: true,
-                },
-              },
-            },
-          },
-        },
+        select: { id: true, scheduleId: true },
       });
 
       if (!court) {
         throw new BadGatewayException('Court not found');
       }
 
-      await this.prisma.$transaction(async (tx) => {
-        for (const timeBlock of court.schedule.timeBlocks) {
-          await tx.scheduledBooking.deleteMany({
-            where: { scheduleTimeBlockId: timeBlock.id },
-          });
-        }
-
-        await tx.scheduleTimeBlock.deleteMany({
-          where: { scheduleId: court.scheduleId },
+      await this.prisma.$transaction(async (prisma) => {
+        await prisma.court.delete({
+          where: { id: court.id },
         });
 
-        await tx.schedule.delete({
+        await prisma.schedule.delete({
           where: { id: court.scheduleId },
-        });
-
-        await tx.court.delete({
-          where: { id },
         });
       });
 
       return { message: 'Court deleted successfully' };
-    } catch (e) {
-      this.handleError(e, 'Error deleting court');
+    } catch (error) {
+      console.error(`Error deleting court with ID ${id}:`, error);
+      this.handleError(error, 'Error deleting court');
+      return { message: 'Error deleting court' }; // Return explícito en caso de error
     }
   }
 
