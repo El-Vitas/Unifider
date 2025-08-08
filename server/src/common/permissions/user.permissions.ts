@@ -10,6 +10,7 @@ export const UserPermissions: RolePermissions = {
     Resource.SCHEDULE,
     Resource.BOOKING,
     Resource.EQUIPMENT,
+    Resource.COURT,
   ],
   [Action.UPDATE]: [Resource.BOOKING],
   [Action.DELETE]: [Resource.BOOKING],

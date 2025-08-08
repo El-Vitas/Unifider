@@ -1,14 +1,18 @@
 import { Route, Routes } from 'react-router-dom';
 import GymAdmin from '../gym/pages/GymAdmin';
+import CourtAdmin from '../court/pages/CourtAdmin';
 import Location from '../location/pages/Location';
 import LocationEdit from '../location/pages/LocationEdit';
 import GymEdit from '../gym/pages/GymEdit';
+import CourtEdit from '../court/pages/CourtEdit';
 import LocationCreate from '../location/pages/LocationCreate';
 import EquipmentAdmin from '../equipment/pages/EquipmentAdmin';
 import EquipmentCreate from '../equipment/pages/EquipmentCreate';
 import EquipmentEdit from '../equipment/pages/EquipmentEdit';
 import GymCreate from '../gym/pages/GymCreate';
+import CourtCreate from '../court/pages/CourtCreate';
 import GymBookings from '../gym/pages/GymBookings';
+import CourtBookings from '../court/pages/CourtBookings';
 import GymEquipment from '../gym/pages/GymEquipment';
 
 const AdminRoutes = () => {
@@ -25,6 +29,11 @@ const AdminRoutes = () => {
         path="/gym/equipment/edit/:equipmentName"
         element={<EquipmentEdit />}
       />
+
+      <Route path="/court" element={<CourtAdmin />} />
+      <Route path="/court/edit/:courtName" element={<CourtEdit />} />
+      <Route path="/court/create" element={<CourtCreate />} />
+      <Route path="/court/bookings/:courtId" element={<CourtBookings />} />
 
       <Route path="/location" element={<Location />} />
       <Route path="/location/edit/:locationName" element={<LocationEdit />} />

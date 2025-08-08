@@ -3,10 +3,26 @@ import {
   ClockCircleOutlined,
   CloseOutlined,
 } from '@ant-design/icons';
-import type { GymBooking } from '../services/gymBookingsService';
+
+interface BookingData {
+  id: string;
+  scheduleTimeBlockId: string;
+  userId: string;
+  user: {
+    fullName: string;
+    email: string;
+  };
+  scheduleTimeBlock: {
+    startTime: string;
+    endTime: string;
+    dayOfWeek: number;
+  };
+  bookingDate: string;
+  createdAt: string;
+}
 
 interface BookingItemProps {
-  booking: GymBooking;
+  booking: BookingData;
   formatTime: (timeString: string) => string;
   formatDate: (dateString: string) => string;
   getDayName: (dayOfWeek: number) => string;

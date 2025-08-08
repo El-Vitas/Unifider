@@ -1,5 +1,5 @@
 export { GymBookingsManager } from './GymBookingsManager';
-export { BookingPageHeader } from './BookingPageHeader';
+export { BookingPageHeader } from '../../../common/components/booking-management/BookingPageHeader';
 export { GymSelector } from './GymSelector';
 export { BookingContentArea } from './BookingContentArea';
 export { BookingFiltersControls } from './BookingFiltersControls';

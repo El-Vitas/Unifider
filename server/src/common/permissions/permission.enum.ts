@@ -8,6 +8,7 @@ export enum Action {
 export enum Resource {
   LOCATION = 'location',
   GYM = 'gym',
+  COURT = 'court',
   EQUIPMENT = 'equipment',
   USER = 'user',
   ROLE = 'role',
