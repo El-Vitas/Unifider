@@ -1,27 +1,33 @@
 import React, { useState, useCallback } from 'react';
 import MainForm from '../../common/components/MainForm';
+import TeamForm from '../components/TeamForm';
 import { httpAdapter } from '../../common/adapters/httpAdapter';
 import { customToast } from '../../common/utils/customToast';
 import config from '../../config';
+import type { Team } from '../entities';
 import { useAuth } from '../../common/hooks/useAuth';
-import EquipmentForm from '../components/EquipmentForm';
-import type { EquipmentType } from '../entities';
 import { useNavigate } from 'react-router-dom';
 
-const EquipmentCreate = () => {
+const TeamCreate = () => {
   const [formData, setFormData] = useState<{
     name: string;
-    description: string;
-    imageUrl?: string;
-  }>({ name: '', description: '', imageUrl: '' });
+    instructor: string;
+    contact: string;
+    imageUrl: string;
+  }>({ name: '', instructor: '', contact: '', imageUrl: '' });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
-  const redirectUrl = '/gym/equipment/';
+  const redirectUrl = '/team/';
   const authToken = useAuth().authToken;
 
   const handleFormChange = useCallback(
-    (data: { name: string; description: string; imageUrl?: string }) => {
+    (data: {
+      name: string;
+      instructor: string;
+      contact: string;
+      imageUrl: string;
+    }) => {
       setFormData(data);
     },
     [],
@@ -36,15 +42,16 @@ const EquipmentCreate = () => {
     setSubmitting(true);
 
     try {
-      const equipmentData: Omit<EquipmentType, 'id'> = {
+      const teamData: Omit<Team, 'id'> = {
         name: formData.name.trim(),
-        description: formData.description?.trim() || undefined,
+        instructor: formData.instructor.trim() || undefined,
+        contact: formData.contact.trim() || undefined,
         imageUrl: undefined, // Will be set by image upload if file exists
       };
 
-      const createEquipmentResponse = await httpAdapter.post<EquipmentType>(
-        `${config.apiUrl}/equipment/create`,
-        equipmentData,
+      const createTeamResponse = await httpAdapter.post<Team>(
+        `${config.apiUrl}/team/create`,
+        teamData,
         {
           headers: {
             authorization: `Bearer ${authToken}`,
@@ -53,14 +60,14 @@ const EquipmentCreate = () => {
         },
       );
 
-      const createdEquipment = createEquipmentResponse.data;
+      const createdTeam = createTeamResponse.data;
 
-      if (imageFile && createdEquipment.id) {
+      if (imageFile && createdTeam.id) {
         const imageFormData = new FormData();
         imageFormData.append('image', imageFile);
 
         await httpAdapter.post(
-          `${config.apiUrl}/equipment/${createdEquipment.id}/image`,
+          `${config.apiUrl}/team/${createdTeam.id}/image`,
           imageFormData,
           {
             headers: {
@@ -70,13 +77,13 @@ const EquipmentCreate = () => {
         );
       }
 
-      customToast.success('Equipamiento creado correctamente');
+      customToast.success('Equipo creado correctamente');
       navigate(redirectUrl);
     } catch (err: unknown) {
       if (err instanceof Error) {
-        customToast.error(`Error al crear el equipamiento: ${err.message}`);
+        customToast.error(`Error al crear el equipo: ${err.message}`);
       } else {
-        customToast.error('Error al crear el equipamiento: Error desconocido');
+        customToast.error('Error al crear el equipo: Error desconocido');
       }
     } finally {
       setSubmitting(false);
@@ -86,8 +93,8 @@ const EquipmentCreate = () => {
   const isLoading = submitting;
 
   return (
-    <MainForm onSubmit={onSubmit} submitButtonText="Crear Equipamiento">
-      <EquipmentForm
+    <MainForm onSubmit={onSubmit} submitButtonText="Crear Equipo">
+      <TeamForm
         initialData={null}
         isLoading={isLoading}
         onFormChange={handleFormChange}
@@ -97,4 +104,4 @@ const EquipmentCreate = () => {
   );
 };
 
-export default EquipmentCreate;
+export default TeamCreate;

@@ -14,6 +14,9 @@ import CourtCreate from '../court/pages/CourtCreate';
 import GymBookings from '../gym/pages/GymBookings';
 import CourtBookings from '../court/pages/CourtBookings';
 import GymEquipment from '../gym/pages/GymEquipment';
+import TeamAdmin from '../team/pages/TeamAdmin';
+import TeamCreate from '../team/pages/TeamCreate';
+import TeamEdit from '../team/pages/TeamEdit';
 
 const AdminRoutes = () => {
   return (
@@ -38,6 +41,10 @@ const AdminRoutes = () => {
       <Route path="/location" element={<Location />} />
       <Route path="/location/edit/:locationName" element={<LocationEdit />} />
       <Route path="/location/create" element={<LocationCreate />} />
+
+      <Route path="/team" element={<TeamAdmin />} />
+      <Route path="/team/create" element={<TeamCreate />} />
+      <Route path="/team/edit/:id" element={<TeamEdit />} />
     </Routes>
   );
 };

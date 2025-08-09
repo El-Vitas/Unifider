@@ -551,6 +551,94 @@ async function main() {
     },
   });
 
+  // ===== TEAMS =====
+  console.log('Creating teams...');
+
+  await prisma.team.upsert({
+    where: { name: 'los leones' },
+    update: {
+      instructor: 'Carlos Mendoza',
+      contact: '+56 9 1234 5678',
+      imageUrl: null,
+      createdBy: adminUser.id,
+    },
+    create: {
+      name: 'los leones',
+      instructor: 'Carlos Mendoza',
+      contact: '+56 9 1234 5678',
+      imageUrl: null,
+      createdBy: adminUser.id,
+    },
+  });
+
+  await prisma.team.upsert({
+    where: { name: 'las águilas' },
+    update: {
+      instructor: 'Ana García',
+      contact: '+56 9 8765 4321',
+      imageUrl: null,
+      createdBy: adminUser.id,
+    },
+    create: {
+      name: 'las águilas',
+      instructor: 'Ana García',
+      contact: '+56 9 8765 4321',
+      imageUrl: null,
+      createdBy: adminUser.id,
+    },
+  });
+
+  await prisma.team.upsert({
+    where: { name: 'los tigres' },
+    update: {
+      instructor: 'Miguel Rodríguez',
+      contact: '+56 9 5555 1234',
+      imageUrl: null,
+      createdBy: adminUser.id,
+    },
+    create: {
+      name: 'los tigres',
+      instructor: 'Miguel Rodríguez',
+      contact: '+56 9 5555 1234',
+      imageUrl: null,
+      createdBy: adminUser.id,
+    },
+  });
+
+  await prisma.team.upsert({
+    where: { name: 'las panteras' },
+    update: {
+      instructor: 'Laura Martínez',
+      contact: '+56 9 9999 0000',
+      imageUrl: null,
+      createdBy: adminUser.id,
+    },
+    create: {
+      name: 'las panteras',
+      instructor: 'Laura Martínez',
+      contact: '+56 9 9999 0000',
+      imageUrl: null,
+      createdBy: adminUser.id,
+    },
+  });
+
+  await prisma.team.upsert({
+    where: { name: 'los cóndores' },
+    update: {
+      instructor: 'Pedro Silva',
+      contact: '+56 9 7777 8888',
+      imageUrl: null,
+      createdBy: adminUser.id,
+    },
+    create: {
+      name: 'los cóndores',
+      instructor: 'Pedro Silva',
+      contact: '+56 9 7777 8888',
+      imageUrl: null,
+      createdBy: adminUser.id,
+    },
+  });
+
   // ===== SECTIONS =====
   console.log('Creating workshop sections...');
 

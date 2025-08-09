@@ -120,6 +120,25 @@ export class EquipmentService {
     }
   }
 
+  async updateImage(equipmentId: string, imageUrl: string) {
+    try {
+      const equipment = await this.prisma.equipment.update({
+        where: { id: equipmentId },
+        data: { imageUrl },
+        select: {
+          id: true,
+          name: true,
+          imageUrl: true,
+        },
+      });
+
+      return equipment;
+    } catch (e) {
+      console.log(e);
+      throw new BadGatewayException('Error updating equipment image');
+    }
+  }
+
   async deleteEquipment(id: string) {
     try {
       const deletedEquipment = await this.prisma.equipment.delete({

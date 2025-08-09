@@ -1,53 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import InputField from '../../common/components/form/InputField';
-import type { EquipmentType } from '../entities';
 import InputFileField from '../../common/components/form/InputFileField';
+import type { Team } from '../entities';
 
-interface EquipmentFormProps {
-  initialData?: EquipmentType | null;
+interface TeamFormProps {
+  initialData?: Team | null;
   isLoading?: boolean;
   onFormChange: (data: {
     name: string;
-    description: string;
-    imageUrl?: string;
+    instructor: string;
+    contact: string;
+    imageUrl: string;
   }) => void;
   onFileChange?: (file: File | null) => void;
 }
 
-const EquipmentForm: React.FC<EquipmentFormProps> = ({
+const TeamForm: React.FC<TeamFormProps> = ({
   initialData,
   isLoading = false,
   onFormChange,
   onFileChange,
 }) => {
   const [name, setName] = useState<string>(initialData?.name || '');
-  const [description, setDescription] = useState<string>(
-    initialData?.description || '',
+  const [instructor, setInstructor] = useState<string>(
+    initialData?.instructor || '',
   );
+  const [contact, setContact] = useState<string>(initialData?.contact || '');
   const [imageUrl, setImageUrl] = useState<string>(initialData?.imageUrl || '');
   const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     setName(initialData?.name || '');
-    setDescription(initialData?.description || '');
+    setInstructor(initialData?.instructor || '');
+    setContact(initialData?.contact || '');
     setImageUrl(initialData?.imageUrl || '');
   }, [initialData]);
 
   useEffect(() => {
-    onFormChange({
-      name,
-      description,
-      imageUrl: imageUrl || undefined,
-    });
-  }, [name, description, imageUrl, onFormChange]);
-
-  const onNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-  };
-
-  const onDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDescription(e.target.value);
-  };
+    onFormChange({ name, instructor, contact, imageUrl });
+  }, [name, instructor, contact, imageUrl, onFormChange]);
 
   const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -61,31 +52,39 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({
     <>
       <InputField
         id="name"
-        label="Nombre del equipamiento"
+        label="Nombre del Equipo"
         type="text"
-        placeholder="Nombre del equipamiento"
+        placeholder="Nombre del equipo"
         required={true}
         value={name}
-        onChange={onNameChange}
+        onChange={(e) => setName(e.target.value)}
         props={{ autoComplete: 'off' }}
         isLoading={isLoading}
       />
-
       <InputField
-        id="description"
-        label="Descripción"
+        id="instructor"
+        label="Instructor"
         type="text"
-        placeholder="Descripción del equipamiento"
-        required={true}
-        value={description}
-        onChange={onDescriptionChange}
+        placeholder="Nombre del instructor"
+        value={instructor}
+        onChange={(e) => setInstructor(e.target.value)}
+        props={{ autoComplete: 'off' }}
+        isLoading={isLoading}
+      />
+      <InputField
+        id="contact"
+        label="Contacto"
+        type="text"
+        placeholder="Contacto"
+        value={contact}
+        onChange={(e) => setContact(e.target.value)}
         props={{ autoComplete: 'off' }}
         isLoading={isLoading}
       />
 
       <InputFileField
-        id="equipmentImage"
-        label="Imagen del Equipamiento"
+        id="teamImage"
+        label="Imagen del Equipo"
         onChange={onImageChange}
         required={false}
         accept="image/*"
@@ -115,4 +114,4 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({
   );
 };
 
-export default EquipmentForm;
+export default TeamForm;

@@ -1,0 +1,13 @@
+model Team {
+    id         String   @id @default(uuid())
+    name       String   @unique
+    instructor String?
+    contact    String?
+    imageUrl   String?
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    createdBy  String
+    admin      User     @relation("AdminTeams", fields: [createdBy], references: [id])
+
+    @@map("teams")
+}
