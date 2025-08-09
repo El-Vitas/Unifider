@@ -17,6 +17,12 @@ import GymEquipment from '../gym/pages/GymEquipment';
 import TeamAdmin from '../team/pages/TeamAdmin';
 import TeamCreate from '../team/pages/TeamCreate';
 import TeamEdit from '../team/pages/TeamEdit';
+import WorkshopAdmin from '../workshop/pages/WorkshopAdmin';
+import WorkshopCreate from '../workshop/pages/WorkshopCreate';
+import WorkshopEdit from '../workshop/pages/WorkshopEdit';
+import SectionAdmin from '../section/pages/SectionAdmin';
+import SectionCreate from '../section/pages/SectionCreate';
+import SectionEdit from '../section/pages/SectionEdit';
 
 const AdminRoutes = () => {
   return (
@@ -45,6 +51,17 @@ const AdminRoutes = () => {
       <Route path="/team" element={<TeamAdmin />} />
       <Route path="/team/create" element={<TeamCreate />} />
       <Route path="/team/edit/:id" element={<TeamEdit />} />
+
+      <Route path="/workshop" element={<WorkshopAdmin />} />
+      <Route path="/workshop/create" element={<WorkshopCreate />} />
+      <Route path="/workshop/edit/:workshopId" element={<WorkshopEdit />} />
+      <Route path="/workshop/sections/:workshopId" element={<SectionAdmin />} />
+
+      <Route path="/section/create/:workshopId" element={<SectionCreate />} />
+      <Route
+        path="/section/edit/:sectionId/:workshopId"
+        element={<SectionEdit />}
+      />
     </Routes>
   );
 };

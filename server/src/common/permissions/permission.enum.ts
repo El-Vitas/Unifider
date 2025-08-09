@@ -15,4 +15,6 @@ export enum Resource {
   SCHEDULE = 'schedule',
   BOOKING = 'booking',
   TEAM = 'team',
+  WORKSHOP = 'workshop',
+  SECTION = 'section',
 }

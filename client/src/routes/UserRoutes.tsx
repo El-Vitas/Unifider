@@ -5,6 +5,8 @@ import GymEquipment from '../gym/pages/GymEquipment';
 import GymBooking from '../gym/pages/GymBooking';
 import CourtBooking from '../court/pages/CourtBooking';
 import TeamUser from '../team/pages/TeamUser';
+import WorkshopUser from '../workshop/pages/WorkshopUser';
+import WorkshopDetail from '../workshop/pages/WorkshopDetail';
 
 const UserRoutes = () => {
   return (
@@ -17,6 +19,9 @@ const UserRoutes = () => {
       <Route path="/court/booking/:courtId" element={<CourtBooking />} />
 
       <Route path="/team" element={<TeamUser />} />
+
+      <Route path="/workshop" element={<WorkshopUser />} />
+      <Route path="/workshop/:id" element={<WorkshopDetail />} />
     </Routes>
   );
 };
