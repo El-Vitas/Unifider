@@ -1,10 +1,26 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { FiltersDto } from './dto/filters.dto';
+import { CreateSectionDto } from './dto/create-section.dto';
+import { UpdateSectionDto } from './dto/update-section.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class SectionService {
   constructor(private prisma: PrismaService) {}
+
+  async findById(id: string) {
+    const section = await this.prisma.section.findUnique({
+      where: { id },
+    });
+    if (!section) {
+      throw new NotFoundException(`Section with ID ${id} not found`);
+    }
+    return section;
+  }
 
   async findWithFilters(filtersDto: FiltersDto) {
     const where = Object.entries(filtersDto).reduce(
@@ -20,10 +36,7 @@ export class SectionService {
     const sections = await this.prisma.section.findMany({
       where,
     });
-    if (!sections || sections.length === 0) {
-      throw new NotFoundException('No sections found');
-    }
-    return sections;
+    return sections || [];
   }
 
   async findWithFiltersAndAllData(filtersDto: FiltersDto) {
@@ -77,14 +90,10 @@ export class SectionService {
       },
     });
 
-    if (!sections || sections.length === 0) {
-      throw new NotFoundException('No sections found');
-    }
-
-    return sections;
+    return sections || [];
   }
 
-  async findSectionBigCardDataFromUser(workshopId: string, email: string) {
+  async findByWorkshopIdWithUserData(workshopId: string, email: string) {
     const sections = await this.prisma.section.findMany({
       where: {
         workshopId,
@@ -128,7 +137,7 @@ export class SectionService {
     });
 
     if (!sections || sections.length === 0) {
-      throw new NotFoundException('No sections found');
+      return [];
     }
 
     const modifiedSections = sections.map(
@@ -145,5 +154,146 @@ export class SectionService {
     );
 
     return modifiedSections;
+  }
+
+  async create(
+    createSectionDto: CreateSectionDto,
+    userId: string,
+    file?: Express.Multer.File,
+  ) {
+    const imageUrl = file ? `/uploads/section-images/${file.filename}` : null;
+
+    const section = await this.prisma.section.create({
+      data: {
+        ...createSectionDto,
+        imageUrl,
+        createdBy: userId,
+      },
+    });
+
+    return section;
+  }
+
+  async update(
+    id: string,
+    updateSectionDto: UpdateSectionDto,
+    userId: string,
+    file?: Express.Multer.File,
+  ) {
+    const existingSection = await this.prisma.section.findUnique({
+      where: { id },
+    });
+
+    if (!existingSection) {
+      throw new NotFoundException('Section not found');
+    }
+
+    const imageUrl = file
+      ? `/uploads/section-images/${file.filename}`
+      : existingSection.imageUrl;
+
+    const section = await this.prisma.section.update({
+      where: { id },
+      data: {
+        ...updateSectionDto,
+        imageUrl,
+        updatedAt: new Date(),
+      },
+    });
+
+    return section;
+  }
+
+  async delete(id: string) {
+    const existingSection = await this.prisma.section.findUnique({
+      where: { id },
+    });
+
+    if (!existingSection) {
+      throw new NotFoundException('Section not found');
+    }
+
+    await this.prisma.section.delete({
+      where: { id },
+    });
+
+    return { message: 'Section deleted successfully' };
+  }
+
+  async bookSection(sectionId: string, userEmail: string) {
+    const section = await this.prisma.section.findUnique({
+      where: { id: sectionId },
+      include: {
+        bookings: {
+          where: {
+            user: {
+              email: userEmail,
+            },
+          },
+        },
+      },
+    });
+
+    if (!section) {
+      throw new NotFoundException('Section not found');
+    }
+
+    if (section.bookings.length > 0) {
+      throw new ConflictException('User already booked this section');
+    }
+
+    await this.prisma.section.update({
+      where: { id: sectionId },
+      data: {
+        bookings: {
+          create: {
+            bookingDate: new Date(),
+            user: {
+              connect: {
+                email: userEmail,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return { message: 'Section booked successfully' };
+  }
+
+  async unbookSection(sectionId: string, userEmail: string) {
+    const section = await this.prisma.section.findUnique({
+      where: { id: sectionId },
+      include: {
+        bookings: {
+          where: {
+            user: {
+              email: userEmail,
+            },
+          },
+        },
+      },
+    });
+
+    if (!section) {
+      throw new NotFoundException('Section not found');
+    }
+
+    if (section.bookings.length === 0) {
+      throw new ConflictException('User has not booked this section');
+    }
+
+    await this.prisma.section.update({
+      where: { id: sectionId },
+      data: {
+        bookings: {
+          delete: {
+            id: section.bookings[0].id,
+          },
+        },
+      },
+    });
+
+    return { message: 'Section unbooked successfully' };
   }
 }
