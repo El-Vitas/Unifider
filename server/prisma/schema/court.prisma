@@ -1,20 +1,17 @@
 model Court {
-    id          String   @id @default(uuid())
-    name        String   @unique // Nombre de la cancha
-    description String? // Ej: Tipo de superficie, dimensiones
-    imageUrl    String? // URL de la imagen de la cancha
-    locationId  String // Dónde está ubicada (FK a Location)
-    createdBy   String // ID del User (Admin) que la creó
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  imageUrl    String?
+  locationId  String
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-    // Relación con el creador
-    admin    User     @relation("AdminCourts", fields: [createdBy], references: [id])
-    location Location @relation(fields: [locationId], references: [id])
-    // Relación con la ubicación física
-
-    // Relación: Horarios asociados a esta cancha (usando Schedule genérico)
-    schedule Schedule? @relation("CourtSchedules")
-
-    @@map("courts")
+  admin    User      @relation("AdminCourts", fields: [createdBy], references: [id])
+  location Location  @relation(fields: [locationId], references: [id])
+  
+  scheduleId  String    @unique
+  schedule    Schedule  @relation(fields: [scheduleId], references: [id])
+  @@map("courts")
 }

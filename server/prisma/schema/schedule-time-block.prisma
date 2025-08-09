@@ -1,0 +1,17 @@
+model ScheduleTimeBlock {
+  id         String   @id @default(uuid())
+  scheduleId String
+  dayOfWeek  Int
+  startTime  String //HH:MM format
+  endTime    String //HH:MM format
+  capacity   Int      @default(0)
+  isEnabled  Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  schedule         Schedule           @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  ScheduledBooking ScheduledBooking[]
+
+  @@map("schedule_time_blocks")
+}

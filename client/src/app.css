@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+    --color-primary: #005E90;
+    --color-disabled: #313131a5;
+    --color-accent: #0d73ab;
+}
+
+body {
+    background-color: #F2F3F7;
+}
+
+/* .card{
+    margin-top: 1%;
+    margin-bottom: 1%;
+    box-shadow: 7px 6px 12px -9px rgba(0,0,0,.62);
+} */
+  
+.btn-disabled{
+    display: inline-block; 
+    padding: 10px 20px; 
+    background-color: #313131a5; 
+    color: white; 
+    border-radius: .5rem; 
+}

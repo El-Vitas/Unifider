@@ -1,17 +1,17 @@
 model Gym {
-    id          String   @id @default(uuid())
-    name        String   @unique
-    description String?
-    locationId  String 
-    createdBy   String 
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-    imageUrl    String?
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  locationId  String
+  createdBy   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  imageUrl    String?
 
-    admin User @relation("AdminGyms", fields: [createdBy], references: [id])
-    equipment GymEquipment[]
-    location  Location       @relation(fields: [locationId], references: [id])
-    schedule Schedule? @relation("GymSchedules")
+  admin       User      @relation("AdminGyms", fields: [createdBy], references: [id])
+  equipment   GymEquipment[]
+  location    Location  @relation(fields: [locationId], references: [id])
 
-    @@map("gyms")
+  scheduleId  String    @unique
+  schedule    Schedule  @relation(fields: [scheduleId], references: [id])
 }

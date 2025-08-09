@@ -1,5 +1,6 @@
 /dist
 /node_modules
+postgres/
 /build
-.env.example
-.gitignore
+/.env.example
+/.gitignore

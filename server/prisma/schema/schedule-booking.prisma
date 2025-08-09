@@ -1,0 +1,14 @@
+model ScheduledBooking {
+  id                  String   @id @default(uuid())
+  scheduleTimeBlockId String
+  userId              String
+  bookingDate         DateTime
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  scheduleTimeBlock ScheduleTimeBlock @relation(fields: [scheduleTimeBlockId], references: [id], onDelete: Cascade)
+  user              User              @relation("UserScheduledBookings", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([scheduleTimeBlockId, userId, bookingDate])
+  @@map("scheduled_bookings")
+}
