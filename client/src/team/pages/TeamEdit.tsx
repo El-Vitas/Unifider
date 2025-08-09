@@ -1,79 +1,75 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import MainForm from '../../common/components/MainForm';
-import EquipmentForm from '../components/EquipmentForm';
-import { useParams } from 'react-router-dom';
+import TeamForm from '../components/TeamForm';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAsync } from '../../common/hooks/useAsync';
 import config from '../../config';
 import { customToast } from '../../common/utils/customToast';
 import { httpAdapter } from '../../common/adapters/httpAdapter';
-import type { EquipmentType } from '../entities';
+import type { Team } from '../entities';
 import type { CustomHttpResponse } from '../../common/types';
 import { useAuth } from '../../common/hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
-const EquipmentEdit = () => {
-  const { equipmentName } = useParams<{ equipmentName: string }>();
-  const [formData, setFormData] = useState<EquipmentType>({
+
+const TeamEdit = () => {
+  const { id } = useParams<{ id: string }>();
+  const [formData, setFormData] = useState<Team>({
     id: '',
     name: '',
-    description: '',
-    imageUrl: undefined,
+    instructor: '',
+    contact: '',
+    imageUrl: '',
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const navigate = useNavigate();
-  const redirectUrl = '/gym/equipment/';
   const [submitting, setSubmitting] = useState(false);
-  const urlEquipment = useMemo(
-    () => `${config.apiUrl}/equipment/${equipmentName}`,
-    [equipmentName],
-  );
+  const navigate = useNavigate();
+  const redirectUrl = '/team/';
+  const urlTeam = useMemo(() => `${config.apiUrl}/team/${id}`, [id]);
   const authToken = useAuth().authToken;
 
-  const fetchEquipmentFn = useCallback(
+  const fetchTeamFn = useCallback(
     () =>
-      httpAdapter.get<EquipmentType>(urlEquipment, {
+      httpAdapter.get<Team>(urlTeam, {
         headers: {
           authorization: `Bearer ${authToken}`,
         },
       }),
-    [urlEquipment, authToken],
+    [urlTeam, authToken],
   );
 
-  const updateEquipmentFn = useCallback(
-    (data: EquipmentType) =>
-      httpAdapter.put<EquipmentType>(
-        `${config.apiUrl}/equipment/update`,
-        data,
-        {
-          headers: {
-            authorization: `Bearer ${authToken}`,
-          },
+  const updateTeamFn = useCallback(
+    (data: Team) =>
+      httpAdapter.patch<Team>(`${config.apiUrl}/team/${id}`, data, {
+        headers: {
+          authorization: `Bearer ${authToken}`,
         },
-      ),
-    [authToken],
+      }),
+    [authToken, id],
   );
 
   const {
-    data: initialEquipmentData,
+    data: initialTeamData,
     loading: fetchLoading,
     error: fetchError,
-    execute: fetchEquipment,
-  } = useAsync<CustomHttpResponse<EquipmentType>>(
-    fetchEquipmentFn,
-    'Failed to fetch Equipment',
-  );
+    execute: fetchTeam,
+  } = useAsync<CustomHttpResponse<Team>>(fetchTeamFn, 'Failed to fetch Team');
 
   useEffect(() => {
-    fetchEquipment();
-  }, [fetchEquipment]);
+    fetchTeam();
+  }, [fetchTeam]);
 
   useEffect(() => {
-    if (initialEquipmentData?.data) {
-      setFormData(initialEquipmentData.data);
+    if (initialTeamData?.data) {
+      setFormData(initialTeamData.data);
     }
-  }, [initialEquipmentData]);
+  }, [initialTeamData]);
 
   const handleFormChange = useCallback(
-    (data: { name: string; description: string; imageUrl?: string }) => {
+    (data: {
+      name: string;
+      instructor: string;
+      contact: string;
+      imageUrl: string;
+    }) => {
       setFormData((prev) => ({ ...prev, ...data }));
     },
     [],
@@ -94,21 +90,22 @@ const EquipmentEdit = () => {
     setSubmitting(true);
 
     try {
-      const updatedEquipment: EquipmentType = {
+      const updatedTeam: Team = {
         ...formData,
         name: formData.name,
-        description: formData.description,
-        imageUrl: formData.imageUrl || undefined,
+        instructor: formData.instructor,
+        contact: formData.contact,
+        imageUrl: formData.imageUrl,
       };
 
-      await updateEquipmentFn(updatedEquipment);
+      await updateTeamFn(updatedTeam);
 
       if (imageFile && formData.id) {
         const imageFormData = new FormData();
         imageFormData.append('image', imageFile);
 
         await httpAdapter.post(
-          `${config.apiUrl}/equipment/${formData.id}/image`,
+          `${config.apiUrl}/team/${formData.id}/image`,
           imageFormData,
           {
             headers: {
@@ -118,17 +115,15 @@ const EquipmentEdit = () => {
         );
       }
 
-      customToast.success('Equipamiento actualizado correctamente');
+      customToast.success('Equipo actualizado correctamente');
       navigate(redirectUrl);
     } catch (err: unknown) {
       if (err instanceof Error) {
         customToast.error(
-          `Error al actualizar el equipamiento: ${err?.message ?? 'Error desconocido'}`,
+          `Error al actualizar el equipo: ${err?.message ?? 'Error desconocido'}`,
         );
       } else {
-        customToast.error(
-          'Error al actualizar el equipamiento: Error desconocido',
-        );
+        customToast.error('Error al actualizar el equipo: Error desconocido');
       }
     } finally {
       setSubmitting(false);
@@ -137,13 +132,9 @@ const EquipmentEdit = () => {
 
   const isLoading = fetchLoading || submitting;
 
-  if ((!fetchLoading && !initialEquipmentData) || fetchError) {
-    navigate(redirectUrl);
-  }
-
   return (
-    <MainForm onSubmit={onSubmit} submitButtonText="Guardar Cambios">
-      <EquipmentForm
+    <MainForm onSubmit={onSubmit} submitButtonText="Actualizar Equipo">
+      <TeamForm
         initialData={formData}
         isLoading={isLoading}
         onFormChange={handleFormChange}
@@ -153,4 +144,4 @@ const EquipmentEdit = () => {
   );
 };
 
-export default EquipmentEdit;
+export default TeamEdit;

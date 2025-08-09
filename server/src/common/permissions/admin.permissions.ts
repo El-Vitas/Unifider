@@ -12,6 +12,7 @@ export const AdminPermissions: RolePermissions = {
     Resource.SCHEDULE,
     Resource.BOOKING,
     Resource.COURT,
+    Resource.TEAM,
   ],
   [Action.READ]: [
     Resource.GYM,
@@ -22,6 +23,7 @@ export const AdminPermissions: RolePermissions = {
     Resource.SCHEDULE,
     Resource.BOOKING,
     Resource.COURT,
+    Resource.TEAM,
   ],
   [Action.UPDATE]: [
     Resource.GYM,
@@ -32,6 +34,7 @@ export const AdminPermissions: RolePermissions = {
     Resource.SCHEDULE,
     Resource.BOOKING,
     Resource.COURT,
+    Resource.TEAM,
   ],
   [Action.DELETE]: [
     Resource.GYM,
@@ -42,5 +45,6 @@ export const AdminPermissions: RolePermissions = {
     Resource.SCHEDULE,
     Resource.BOOKING,
     Resource.COURT,
+    Resource.TEAM,
   ],
 };

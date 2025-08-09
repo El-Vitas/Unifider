@@ -4,6 +4,7 @@ import Court from '../court/pages/CourtUser';
 import GymEquipment from '../gym/pages/GymEquipment';
 import GymBooking from '../gym/pages/GymBooking';
 import CourtBooking from '../court/pages/CourtBooking';
+import TeamUser from '../team/pages/TeamUser';
 
 const UserRoutes = () => {
   return (
@@ -14,6 +15,8 @@ const UserRoutes = () => {
 
       <Route path="/court" element={<Court />} />
       <Route path="/court/booking/:courtId" element={<CourtBooking />} />
+
+      <Route path="/team" element={<TeamUser />} />
     </Routes>
   );
 };

@@ -1,17 +1,27 @@
-import { Controller, Get, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Put,
+  Delete,
+  Param,
+  Post,
+  Body,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
+} from '@nestjs/common';
 import { EquipmentService } from './equipment.service';
 import { Permissions } from 'src/common/decorators/permissions.decorator';
 import { permissionFactory } from 'src/common/permissions/permissionFactory';
 import { Resource } from 'src/common/permissions/permission.enum';
-import { Delete, Param } from '@nestjs/common';
 import { ParseUUIDPipe } from '@nestjs/common/pipes/parse-uuid.pipe';
-import { Post, Body, UseInterceptors } from '@nestjs/common';
 import { UserInterceptor } from 'src/common/interceptors/user.interceptor';
 import { User } from 'src/common/decorators/user.decorator';
 import type { User as UserEntity } from 'src/user/entities/user.entity';
 import { CreateEquipmentDto } from './dto/create-equipment.dto';
 import { UpdateEquipmentDto } from './dto/update-equipment.dto';
 import { isUUID } from 'class-validator';
+import { ImageUploadInterceptor } from 'src/common/interceptors/file-upload.interceptor';
 
 @Controller('equipment')
 export class EquipmentController {
@@ -41,6 +51,21 @@ export class EquipmentController {
     @User() user: UserEntity,
   ) {
     return this.equipmentService.createEquipment(createEquipmentDto, user.id);
+  }
+
+  @Post(':equipmentId/image')
+  @Permissions(permissionFactory.canUpdate(Resource.EQUIPMENT))
+  @UseInterceptors(ImageUploadInterceptor('equipment-images'))
+  async updateImage(
+    @Param('equipmentId') equipmentId: string,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    if (!image) {
+      throw new BadRequestException('Image file is required');
+    }
+
+    const imageUrl = `/uploads/equipment-images/${image.filename}`;
+    return await this.equipmentService.updateImage(equipmentId, imageUrl);
   }
 
   @Put('update')
